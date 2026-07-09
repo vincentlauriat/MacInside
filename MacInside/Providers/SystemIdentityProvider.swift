@@ -30,6 +30,7 @@ final class SystemIdentityProvider {
                 ?? (hardware["cpu_type"] as? String) ?? ""
             identity.serialNumber = hardware["serial_number"] as? String ?? ""
         }
+        identity.gpuName = displayInfo()?["_name"] as? String ?? ""
 
         identity.architecture = architectureName()
         (identity.performanceCoreCount, identity.efficiencyCoreCount) = coreCounts()
@@ -39,9 +40,17 @@ final class SystemIdentityProvider {
     }
 
     private static func hardwareInfo() -> [String: Any]? {
+        firstEntry(dataType: "SPHardwareDataType")
+    }
+
+    private static func displayInfo() -> [String: Any]? {
+        firstEntry(dataType: "SPDisplaysDataType")
+    }
+
+    private static func firstEntry(dataType: String) -> [String: Any]? {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/sbin/system_profiler")
-        process.arguments = ["SPHardwareDataType", "-json"]
+        process.arguments = [dataType, "-json"]
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = Pipe()
@@ -51,7 +60,7 @@ final class SystemIdentityProvider {
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
             process.waitUntilExit()
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let items = json["SPHardwareDataType"] as? [[String: Any]],
+                  let items = json[dataType] as? [[String: Any]],
                   let first = items.first else { return nil }
             return first
         } catch {

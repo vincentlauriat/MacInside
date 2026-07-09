@@ -21,19 +21,66 @@ struct MacInsideApp: App {
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
-        .defaultSize(width: 1180, height: 760)
+        .defaultSize(width: 1500, height: 940)
+        .defaultPosition(.center)
         .commands {
             CommandGroup(replacing: .newItem) {}
         }
 
-        MenuBarExtra {
+        // `SceneBuilder` ne supporte pas les `if`/`if-else` imbriqués comme
+        // `ViewBuilder` (limites de buildEither/buildOptional côté Scene) —
+        // chaque MenuBarExtra est donc toujours déclaré, son affichage étant
+        // piloté dynamiquement par `isInserted` plutôt que par une
+        // conditionnelle dans le corps de la scène.
+        MenuBarExtra(isInserted: binding(\.menuBarModeIsCombined)) {
             MenuBarView()
                 .environment(settings)
                 .environment(model)
                 .onAppear { model.start() }
         } label: {
-            MenuBarLabel()
-                .environment(model)
+            MenuBarLabel().environment(model)
+        }
+        .menuBarExtraStyle(.window)
+
+        MenuBarExtra(isInserted: separateBinding(\.showCPUMenuExtra)) {
+            CPUCardView().environment(model).onAppear { model.start() }
+        } label: {
+            CPUMenuBarLabel().environment(model)
+        }
+        .menuBarExtraStyle(.window)
+
+        MenuBarExtra(isInserted: separateBinding(\.showMemoryMenuExtra)) {
+            MemoryCardView().environment(model).onAppear { model.start() }
+        } label: {
+            MemoryMenuBarLabel().environment(model)
+        }
+        .menuBarExtraStyle(.window)
+
+        MenuBarExtra(isInserted: separateBinding(\.showNetworkMenuExtra)) {
+            NetworkMenuBarContent().environment(model).onAppear { model.start() }
+        } label: {
+            NetworkMenuBarLabel().environment(model)
+        }
+        .menuBarExtraStyle(.window)
+
+        MenuBarExtra(isInserted: separateBinding(\.showDiskMenuExtra)) {
+            DiskMenuBarContent().environment(model).onAppear { model.start() }
+        } label: {
+            DiskMenuBarLabel().environment(model)
+        }
+        .menuBarExtraStyle(.window)
+
+        MenuBarExtra(isInserted: separateBinding(\.showBatteryMenuExtra, requires: model.battery.isPresent)) {
+            BatteryCardView().environment(model).onAppear { model.start() }
+        } label: {
+            BatteryMenuBarLabel().environment(model)
+        }
+        .menuBarExtraStyle(.window)
+
+        MenuBarExtra(isInserted: separateBinding(\.showGPUMenuExtra)) {
+            GPUMenuBarContent().environment(model).onAppear { model.start() }
+        } label: {
+            GPUMenuBarLabel().environment(model)
         }
         .menuBarExtraStyle(.window)
 
@@ -41,5 +88,19 @@ struct MacInsideApp: App {
             SettingsView()
                 .environment(settings)
         }
+    }
+
+    /// Binding en lecture seule dérivé d'une propriété calculée de `AppSettings`
+    /// (le `set` est un no-op : ces indicateurs ne se pilotent que via les
+    /// réglages, jamais par une action de l'utilisateur sur le menu bar item).
+    private func binding(_ keyPath: KeyPath<AppSettings, Bool>) -> Binding<Bool> {
+        Binding(get: { settings[keyPath: keyPath] }, set: { _ in })
+    }
+
+    private func separateBinding(_ keyPath: KeyPath<AppSettings, Bool>, requires extra: Bool = true) -> Binding<Bool> {
+        Binding(
+            get: { settings.menuBarMode == .separate && settings[keyPath: keyPath] && extra },
+            set: { _ in }
+        )
     }
 }

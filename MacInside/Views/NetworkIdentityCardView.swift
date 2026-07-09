@@ -9,16 +9,20 @@ struct NetworkIdentityCardView: View {
         let identity = model.identity
 
         MetricCard(title: "Identité réseau", systemImage: "network") {
-            VStack(spacing: 8) {
-                row("Hostname", identity.hostname)
-                row("Interface", [network.interfaceType, network.interfaceName]
-                    .filter { !$0.isEmpty }.joined(separator: " · "))
-                row("Adresse locale", network.localAddress)
-                row("Adresse publique", network.publicAddress)
-                row("Pays", network.countryCode)
-                row("Passerelle", network.gatewayAddress)
-                row("Masque de sous-réseau", network.subnetMask)
-                row("Adresse MAC", network.macAddress)
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(spacing: 8) {
+                    row("Hostname", identity.hostname)
+                    row("Interface", [network.interfaceType, network.interfaceName]
+                        .filter { !$0.isEmpty }.joined(separator: " · "))
+                    row("Adresse locale", network.localAddress)
+                    row("Adresse publique", network.publicAddress)
+                    row("Pays", network.countryCode)
+                    row("Passerelle", network.gatewayAddress)
+                    row("Masque de sous-réseau", network.subnetMask)
+                    row("Adresse MAC", network.macAddress)
+                }
+
+                GPUUtilizationView(gpu: model.gpu, chipName: identity.chipName)
             }
         }
     }

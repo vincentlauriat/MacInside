@@ -26,6 +26,7 @@ struct HeaderView: View {
             HStack(alignment: .top, spacing: 32) {
                 infoColumn {
                     infoRow("Puce", identity.chipName.isEmpty ? "—" : identity.chipName)
+                    infoRow("Carte graphique", identity.gpuName.isEmpty ? "—" : identity.gpuName)
                     infoRow("Mémoire", Formatters.bytes(model.memory.totalBytes))
                     infoRow("Stockage", Formatters.bytes(model.disk.systemVolume?.totalBytes ?? 0))
                 }

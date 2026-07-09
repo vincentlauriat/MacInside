@@ -59,6 +59,22 @@ struct SensorsCardView: View {
                             }
                         }
                     }
+
+                    if !sensors.power.isEmpty {
+                        VStack(spacing: 4) {
+                            ForEach(sensors.power) { reading in
+                                HStack {
+                                    Text(reading.label)
+                                        .font(.caption)
+                                        .lineLimit(1)
+                                    Spacer()
+                                    Text(String(format: "%.2f %@", reading.value, reading.unit))
+                                        .font(.caption.monospacedDigit())
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

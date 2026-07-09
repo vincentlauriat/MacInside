@@ -16,11 +16,12 @@ final class SensorMonitor {
 
         let temperatures = Self.readTemperatures(client)
         let fans = Self.readFans(client)
+        let power = Self.readPower(client)
 
         guard !temperatures.isEmpty || !fans.isEmpty else {
             return SensorStats(available: false)
         }
-        return SensorStats(available: true, temperatures: temperatures, fans: fans)
+        return SensorStats(available: true, temperatures: temperatures, fans: fans, power: power)
     }
 
     private static func readTemperatures(_ client: SMCClient) -> [SensorReading] {
@@ -61,6 +62,16 @@ final class SensorMonitor {
         }
     }
 
+    private static func readPower(_ client: SMCClient) -> [PowerReading] {
+        powerKeys.compactMap { key, label, unit in
+            guard let (bytes, dataType) = client.read(key),
+                  let value = SMCClient.decodeValue(bytes: bytes, dataType: dataType),
+                  value > 0
+            else { return nil }
+            return PowerReading(key: key, label: label, value: value, unit: unit)
+        }
+    }
+
     private static func fanLabel(_ client: SMCClient, index: Int) -> String {
         if let (bytes, _) = client.read("F\(index)ID") {
             let printable = bytes.filter { $0 >= 0x20 && $0 < 0x7F }
@@ -98,5 +109,13 @@ final class SensorMonitor {
         ("Tg0H", "GPU 5"), ("Tg0L", "GPU 6"), ("Tg0P", "GPU 7"), ("Tg0T", "GPU 8"), ("Tg0X", "GPU"),
         ("TaLP", "Ambiante"), ("TaLC", "Ambiante 2"),
         ("Ts0P", "Batterie"), ("Ts1P", "Batterie 2"),
+    ]
+
+    /// Clés de tension/courant/puissance candidates (alimentation secteur).
+    /// Même logique défensive que les températures : liste non exhaustive,
+    /// clés absentes ignorées silencieusement.
+    private static let powerKeys: [(key: String, label: String, unit: String)] = [
+        ("VD0R", "DC In", "V"), ("ID0R", "DC In", "A"), ("PDTR", "DC In", "W"),
+        ("PSTR", "Système", "W"), ("PPBR", "Batterie", "W"),
     ]
 }

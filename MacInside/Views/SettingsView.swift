@@ -30,6 +30,25 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
+            Section("Barre de menu") {
+                Picker("Style", selection: $settings.menuBarModeRaw) {
+                    ForEach(MenuBarMode.allCases) { mode in
+                        Text(mode.label).tag(mode.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+
+                if settings.menuBarMode == .separate {
+                    Toggle("CPU", isOn: $settings.showCPUMenuExtra)
+                    Toggle("Mémoire", isOn: $settings.showMemoryMenuExtra)
+                    Toggle("Réseau", isOn: $settings.showNetworkMenuExtra)
+                    Toggle("Disque", isOn: $settings.showDiskMenuExtra)
+                    Toggle("Batterie", isOn: $settings.showBatteryMenuExtra)
+                    Toggle("GPU", isOn: $settings.showGPUMenuExtra)
+                }
+            }
+
             Section("À propos") {
                 Text("MacInside — tableau de bord système macOS.")
                     .font(.callout)
@@ -37,6 +56,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420, height: 320)
+        .frame(width: 420, height: settings.menuBarMode == .separate ? 560 : 340)
     }
 }

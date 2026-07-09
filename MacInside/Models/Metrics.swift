@@ -6,6 +6,7 @@ struct SystemIdentity: Equatable {
     var modelName: String = ""
     var modelIdentifier: String = ""
     var chipName: String = ""
+    var gpuName: String = ""
     var architecture: String = ""
     var performanceCoreCount: Int = 0
     var efficiencyCoreCount: Int = 0
@@ -102,10 +103,33 @@ struct FanReading: Identifiable, Equatable {
     }
 }
 
+struct PowerReading: Identifiable, Equatable {
+    var id: String { key }
+    var key: String
+    var label: String
+    var value: Double
+    var unit: String
+}
+
 struct SensorStats: Equatable {
     var available: Bool = false
     var temperatures: [SensorReading] = []
     var fans: [FanReading] = []
+    var power: [PowerReading] = []
+}
+
+struct GPUStats: Equatable {
+    var available: Bool = false
+    var deviceUtilizationPercent: Int = 0
+    var rendererUtilizationPercent: Int = 0
+    var tilerUtilizationPercent: Int = 0
+    var inUseSystemMemoryBytes: UInt64 = 0
+    var allocSystemMemoryBytes: UInt64 = 0
+    var recoveryCount: Int = 0
+
+    var memoryUsagePercent: Double {
+        allocSystemMemoryBytes == 0 ? 0 : Double(inUseSystemMemoryBytes) / Double(allocSystemMemoryBytes) * 100
+    }
 }
 
 struct BatteryStats: Equatable {
