@@ -3,29 +3,43 @@ import SwiftUI
 @main
 struct MacInsideApp: App {
     @State private var settings = AppSettings()
+    @State private var model: AppModel
+
+    init() {
+        let settings = AppSettings()
+        _settings = State(initialValue: settings)
+        _model = State(initialValue: AppModel(settings: settings))
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            DashboardView()
                 .environment(settings)
+                .environment(model)
                 .preferredColorScheme(settings.appearance.colorScheme)
+                .onAppear { model.start() }
         }
-        #if os(macOS)
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
-        .defaultSize(width: 960, height: 640)
+        .defaultSize(width: 1180, height: 760)
         .commands {
             CommandGroup(replacing: .newItem) {}
         }
-        #endif
 
-        // Réglages via la scène native macOS (⌘,). Sur iOS, les réglages sont
-        // présentés en feuille depuis `ContentView` (pas de scène `Settings`).
-        #if os(macOS)
+        MenuBarExtra {
+            MenuBarView()
+                .environment(settings)
+                .environment(model)
+                .onAppear { model.start() }
+        } label: {
+            MenuBarLabel()
+                .environment(model)
+        }
+        .menuBarExtraStyle(.window)
+
         Settings {
             SettingsView()
                 .environment(settings)
         }
-        #endif
     }
 }

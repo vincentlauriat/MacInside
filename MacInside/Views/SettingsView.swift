@@ -7,48 +7,36 @@ struct SettingsView: View {
         @Bindable var settings = settings
 
         Form {
-            Section(settings.t("settings_appearance")) {
-                Picker(settings.t("settings_appearance"), selection: $settings.appearanceRaw) {
+            Section("Apparence") {
+                Picker("Apparence", selection: $settings.appearanceRaw) {
                     ForEach(AppearanceMode.allCases) { mode in
-                        Text(settings.t(mode.titleKey)).tag(mode.rawValue)
+                        Text(mode.label).tag(mode.rawValue)
                     }
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
             }
 
-            Section(settings.t("settings_language")) {
-                Picker(settings.t("settings_language"), selection: $settings.languageRaw) {
-                    ForEach(AppLanguage.allCases) { lang in
-                        Text(lang == .system ? settings.t("language_system") : lang.nativeName)
-                            .tag(lang.rawValue)
-                    }
+            Section("Rafraîchissement") {
+                Slider(value: $settings.refreshInterval, in: 0.5...5, step: 0.5) {
+                    Text("Intervalle")
+                } minimumValueLabel: {
+                    Text("0.5s")
+                } maximumValueLabel: {
+                    Text("5s")
                 }
-                .labelsHidden()
-            }
-
-            // Exemple de secret stocké dans le Keychain. Adapte ou supprime.
-            Section(settings.t("settings_apikey")) {
-                SecureField(settings.t("apikey_placeholder"), text: $settings.apiKey)
-                Text(settings.apiKeyConfigured
-                     ? settings.t("apikey_present")
-                     : settings.t("apikey_absent"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(settings.t("apikey_help"))
+                Text("Toutes les \(settings.refreshInterval, specifier: "%.1f") s")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
-            Section(settings.t("settings_about")) {
-                Text(settings.t("settings_about_text"))
+            Section("À propos") {
+                Text("MacInside — tableau de bord système macOS.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
-        #if os(macOS)
-        .frame(width: 460, height: 420)
-        #endif
+        .frame(width: 420, height: 320)
     }
 }

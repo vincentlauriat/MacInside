@@ -33,6 +33,7 @@ dmg-staging/
 # ── Private working docs (kept local, may contain personal info) ─
 CLAUDE.md
 COMMANDS.md
+CHANGES.md
 MEMORY.md
 PLAN.md
 TODOS.md
