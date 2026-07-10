@@ -31,7 +31,9 @@ struct DashboardView: View {
             AnyView(MemoryCardView()),
             AnyView(NetworkIdentityCardView()),
             AnyView(NetworkUsageCardView()),
-            AnyView(SensorsCardView()),
+            AnyView(FansCardView()),
+            AnyView(TemperatureCardView()),
+            AnyView(PowerCardView()),
         ]
         if model.battery.isPresent {
             list.append(AnyView(BatteryCardView()))
