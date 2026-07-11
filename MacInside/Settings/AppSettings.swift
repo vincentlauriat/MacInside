@@ -52,6 +52,9 @@ final class AppSettings {
     var showDiskMenuExtra: Bool { didSet { UserDefaults.standard.set(showDiskMenuExtra, forKey: "showDiskMenuExtra") } }
     var showBatteryMenuExtra: Bool { didSet { UserDefaults.standard.set(showBatteryMenuExtra, forKey: "showBatteryMenuExtra") } }
     var showGPUMenuExtra: Bool { didSet { UserDefaults.standard.set(showGPUMenuExtra, forKey: "showGPUMenuExtra") } }
+    var dashboardCardOrderRaw: String {
+        didSet { UserDefaults.standard.set(dashboardCardOrderRaw, forKey: "dashboardCardOrder") }
+    }
 
     init() {
         let defaults = UserDefaults.standard
@@ -66,9 +69,26 @@ final class AppSettings {
         showDiskMenuExtra = defaults.object(forKey: "showDiskMenuExtra") as? Bool ?? false
         showBatteryMenuExtra = defaults.object(forKey: "showBatteryMenuExtra") as? Bool ?? false
         showGPUMenuExtra = defaults.object(forKey: "showGPUMenuExtra") as? Bool ?? false
+        dashboardCardOrderRaw = defaults.string(forKey: "dashboardCardOrder") ?? ""
     }
 
     var appearance: AppearanceMode { AppearanceMode(rawValue: appearanceRaw) ?? .system }
     var menuBarMode: MenuBarMode { MenuBarMode(rawValue: menuBarModeRaw) ?? .combined }
     var menuBarModeIsCombined: Bool { menuBarMode == .combined }
+
+    /// Ordre des cartes du dashboard, choisi par l'utilisateur via glisser-déposer.
+    /// Les nouvelles cartes (ajoutées dans une version ultérieure) sont
+    /// automatiquement ajoutées à la fin si elles sont absentes de l'ordre stocké.
+    var dashboardCardOrder: [DashboardCardKind] {
+        get {
+            var order = dashboardCardOrderRaw
+                .split(separator: ",")
+                .compactMap { DashboardCardKind(rawValue: String($0)) }
+            for kind in DashboardCardKind.allCases where !order.contains(kind) {
+                order.append(kind)
+            }
+            return order
+        }
+        set { dashboardCardOrderRaw = newValue.map(\.rawValue).joined(separator: ",") }
+    }
 }
