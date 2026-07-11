@@ -15,13 +15,25 @@ final class SensorMonitor {
         guard client.isOpen else { return SensorStats(available: false) }
 
         let temperatures = Self.readTemperatures(client)
-        let fans = Self.readFans(client)
+        let fanCount = Self.readFanCount(client)
+        let fans = Self.readFans(client, count: fanCount ?? 0)
         let power = Self.readPower(client)
+        let hasFans = fanCount != nil
 
-        guard !temperatures.isEmpty || !fans.isEmpty else {
+        guard !temperatures.isEmpty || hasFans else {
             return SensorStats(available: false)
         }
-        return SensorStats(available: true, temperatures: temperatures, fans: fans, power: power)
+        return SensorStats(available: true, hasFans: hasFans, temperatures: temperatures, fans: fans, power: power)
+    }
+
+    /// Présence de la clé `FNum` : distingue "ce Mac n'a pas de ventilateur"
+    /// (Mac Studio/mini fanless) de "la lecture a échoué" — `readFans` seul ne
+    /// permet pas de faire la différence puisqu'il renvoie `[]` dans les deux cas.
+    private static func readFanCount(_ client: SMCClient) -> Int? {
+        guard let (countBytes, countType) = client.read("FNum"),
+              let countValue = SMCClient.decodeValue(bytes: countBytes, dataType: countType)
+        else { return nil }
+        return Int(countValue)
     }
 
     private static func readTemperatures(_ client: SMCClient) -> [SensorReading] {
@@ -34,12 +46,7 @@ final class SensorMonitor {
         }
     }
 
-    private static func readFans(_ client: SMCClient) -> [FanReading] {
-        guard let (countBytes, countType) = client.read("FNum"),
-              let countValue = SMCClient.decodeValue(bytes: countBytes, dataType: countType)
-        else { return [] }
-
-        let count = Int(countValue)
+    private static func readFans(_ client: SMCClient, count: Int) -> [FanReading] {
         guard count > 0, count <= 10 else { return [] }
 
         return (0..<count).compactMap { index -> FanReading? in

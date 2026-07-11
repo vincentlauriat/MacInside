@@ -113,6 +113,7 @@ struct PowerReading: Identifiable, Equatable {
 
 struct SensorStats: Equatable {
     var available: Bool = false
+    var hasFans: Bool = false
     var temperatures: [SensorReading] = []
     var fans: [FanReading] = []
     var power: [PowerReading] = []
