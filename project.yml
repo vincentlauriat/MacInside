@@ -4,6 +4,7 @@ options:
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
+  developmentLanguage: fr
 
 settings:
   base:
@@ -50,6 +51,8 @@ targets:
         CFBundleIdentifier: fr.vincentlauriat.macinside
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        CFBundleDevelopmentRegion: fr
+        CFBundleLocalizations: [fr, en]
         LSMinimumSystemVersion: "14.0"
         LSApplicationCategoryType: public.app-category.utilities
         LSUIElement: false
