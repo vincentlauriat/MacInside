@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Carte Mémoire : anneau Wired/Active/Compressed, top-process, sous-carte stockage.
+/// Carte Mémoire : anneau Wired/Active/Compressed, top-process par mémoire.
 struct MemoryCardView: View {
     @Environment(AppModel.self) private var model
 
@@ -32,8 +32,6 @@ struct MemoryCardView: View {
                 ProcessListView(entries: memory.topProcesses, rowCount: 6) { process in
                     Formatters.bytes(UInt64(max(process.value, 0)))
                 }
-
-                StorageSummaryView(volume: model.disk.systemVolume)
             }
         }
     }

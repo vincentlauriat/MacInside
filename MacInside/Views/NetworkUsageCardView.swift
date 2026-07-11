@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Carte débit réseau : sparklines download/upload, sous-carte volumes externes.
+/// Carte débit réseau : sparklines download/upload et total depuis le lancement.
 struct NetworkUsageCardView: View {
     @Environment(AppModel.self) private var model
 
@@ -47,8 +47,6 @@ struct NetworkUsageCardView: View {
                         .font(.caption2.monospacedDigit())
                         .foregroundStyle(.secondary)
                 }
-
-                ExternalVolumesView(volumes: model.disk.externalVolumes)
             }
         }
     }
