@@ -22,10 +22,13 @@ final class BatteryMonitor {
         stats.percentage = max > 0 ? Int(Double(current) / Double(max) * 100) : 0
         stats.isCharging = (description[kIOPSIsChargingKey] as? Bool) ?? false
 
-        let timeToEmpty = description[kIOPSTimeToEmptyKey] as? Int ?? -1
-        let timeToFull = description[kIOPSTimeToFullChargeKey] as? Int ?? -1
-        let remaining = stats.isCharging ? timeToFull : timeToEmpty
-        stats.timeRemainingMinutes = remaining > 0 ? remaining : nil
+        // `kIOPSTimeToEmptyKey`/`kIOPSTimeToFullChargeKey` (dictionnaire de
+        // description) ne sont plus fiablement peuplées sur Apple Silicon —
+        // elles restent bloquées à -1 en continu. `IOPSGetTimeRemainingEstimate()`
+        // est l'API recommandée par Apple depuis macOS 10.15 pour cette valeur,
+        // que la batterie soit en charge ou en décharge.
+        let estimate = IOPSGetTimeRemainingEstimate()
+        stats.timeRemainingMinutes = estimate > 0 ? Int(estimate / 60) : nil
 
         stats.wattage = Self.adapterWattage()
         (stats.cycleCount, stats.healthPercent) = Self.registryStats()
