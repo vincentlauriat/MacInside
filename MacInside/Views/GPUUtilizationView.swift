@@ -16,22 +16,22 @@ struct GPUUtilizationView: View {
                         .font(.subheadline.weight(.semibold))
                 }
 
-                labeledBar("Utilization", Double(gpu.deviceUtilizationPercent))
-                labeledBar("Memory Usage", gpu.memoryUsagePercent)
+                labeledBar("Utilisation", Double(gpu.deviceUtilizationPercent))
+                labeledBar("Utilisation mémoire", gpu.memoryUsagePercent)
 
                 VStack(spacing: 6) {
-                    row("Device Utilization %", "\(gpu.deviceUtilizationPercent)")
-                    row("Renderer Utilization %", "\(gpu.rendererUtilizationPercent)")
-                    row("Tiler Utilization %", "\(gpu.tilerUtilizationPercent)")
-                    row("System Memory in Use", Formatters.bytes(gpu.inUseSystemMemoryBytes))
-                    row("Alloc System Memory", Formatters.bytes(gpu.allocSystemMemoryBytes))
-                    row("Recovery Count", "\(gpu.recoveryCount)")
+                    row("Utilisation appareil %", "\(gpu.deviceUtilizationPercent)")
+                    row("Utilisation renderer %", "\(gpu.rendererUtilizationPercent)")
+                    row("Utilisation tiler %", "\(gpu.tilerUtilizationPercent)")
+                    row("Mémoire système utilisée", Formatters.bytes(gpu.inUseSystemMemoryBytes))
+                    row("Mémoire système allouée", Formatters.bytes(gpu.allocSystemMemoryBytes))
+                    row("Nombre de récupérations", "\(gpu.recoveryCount)")
                 }
             }
         }
     }
 
-    private func labeledBar(_ label: String, _ percent: Double) -> some View {
+    private func labeledBar(_ label: LocalizedStringKey, _ percent: Double) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(label)
@@ -45,7 +45,7 @@ struct GPUUtilizationView: View {
         }
     }
 
-    private func row(_ label: String, _ value: String) -> some View {
+    private func row(_ label: LocalizedStringKey, _ value: String) -> some View {
         HStack {
             Text(label)
                 .font(.caption2)

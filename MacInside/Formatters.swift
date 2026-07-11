@@ -28,6 +28,8 @@ enum Formatters {
     static func minutes(_ value: Int) -> String {
         let hours = value / 60
         let mins = value % 60
-        return hours > 0 ? "\(hours) h \(mins) min" : "\(mins) min"
+        return hours > 0
+            ? String(localized: "\(hours) h \(mins) min")
+            : String(localized: "\(mins) min")
     }
 }

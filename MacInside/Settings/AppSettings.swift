@@ -13,9 +13,9 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
     }
     var label: String {
         switch self {
-        case .system: return "Système"
-        case .light:  return "Clair"
-        case .dark:   return "Sombre"
+        case .system: return String(localized: "Système")
+        case .light:  return String(localized: "Clair")
+        case .dark:   return String(localized: "Sombre")
         }
     }
 }
@@ -28,8 +28,8 @@ enum MenuBarMode: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .combined: return "Combiné"
-        case .separate: return "Icônes séparées"
+        case .combined: return String(localized: "Combiné")
+        case .separate: return String(localized: "Icônes séparées")
         }
     }
 }

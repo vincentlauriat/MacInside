@@ -49,7 +49,7 @@ struct MenuBarView: View {
         }
     }
 
-    private func summaryRow(icon: String, label: String, value: String) -> some View {
+    private func summaryRow(icon: String, label: LocalizedStringKey, value: String) -> some View {
         HStack {
             Image(systemName: icon)
                 .foregroundStyle(.secondary)

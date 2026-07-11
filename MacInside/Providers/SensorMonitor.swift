@@ -87,22 +87,27 @@ final class SensorMonitor {
                 return name
             }
         }
-        return "Ventilateur \(index + 1)"
+        return String(localized: "Ventilateur \(index + 1)")
     }
 
     /// Clés de température candidates avec libellé lisible. Liste non
     /// exhaustive par construction (voir note en tête de fichier) — couvre
     /// les clés les plus courantes documentées par la communauté (Stats app,
     /// smcFanControl, macs-fan-control) pour Intel et Apple Silicon.
+    ///
+    /// Libellés volontairement en anglais (non localisés) : ce sont des noms
+    /// techniques de capteurs matériel, affichés tels quels même par les
+    /// logiciels français de monitoring (Stats, iStat Menus) — pas du texte
+    /// d'interface à traduire.
     private static let temperatureKeys: [(key: String, label: String)] = [
         // Intel
         ("TC0P", "CPU Proximity"), ("TC0D", "CPU Die"), ("TC0E", "CPU"), ("TC0F", "CPU"),
         ("TC1C", "CPU Core 1"), ("TC2C", "CPU Core 2"), ("TC3C", "CPU Core 3"), ("TC4C", "CPU Core 4"),
         ("TC5C", "CPU Core 5"), ("TC6C", "CPU Core 6"), ("TC7C", "CPU Core 7"), ("TC8C", "CPU Core 8"),
-        ("TCGC", "GPU Intégré"), ("TG0P", "GPU Proximity"), ("TG0D", "GPU Die"),
-        ("TM0P", "Mémoire"), ("TM0S", "Mémoire"),
-        ("TA0P", "Ambiante"), ("TA1P", "Ambiante 2"),
-        ("Ts0S", "Repose-poignet"), ("TB0T", "Batterie"), ("TW0P", "AirPort"),
+        ("TCGC", "Integrated GPU"), ("TG0P", "GPU Proximity"), ("TG0D", "GPU Die"),
+        ("TM0P", "Memory"), ("TM0S", "Memory"),
+        ("TA0P", "Ambient"), ("TA1P", "Ambient 2"),
+        ("Ts0S", "Palm Rest"), ("TB0T", "Battery"), ("TW0P", "AirPort"),
         ("TN0D", "Northbridge Die"), ("TN0P", "Northbridge Proximity"),
         // Apple Silicon
         ("Tp01", "CPU Performance Core 1"), ("Tp05", "CPU Performance Core 2"),
@@ -114,15 +119,16 @@ final class SensorMonitor {
         ("Te0P", "CPU Efficiency Core 3"), ("Te0S", "CPU Efficiency Core 4"),
         ("Tg05", "GPU 1"), ("Tg0D", "GPU 2"), ("Tg0E", "GPU 3"), ("Tg0F", "GPU 4"),
         ("Tg0H", "GPU 5"), ("Tg0L", "GPU 6"), ("Tg0P", "GPU 7"), ("Tg0T", "GPU 8"), ("Tg0X", "GPU"),
-        ("TaLP", "Ambiante"), ("TaLC", "Ambiante 2"),
-        ("Ts0P", "Batterie"), ("Ts1P", "Batterie 2"),
+        ("TaLP", "Ambient"), ("TaLC", "Ambient 2"),
+        ("Ts0P", "Battery"), ("Ts1P", "Battery 2"),
     ]
 
     /// Clés de tension/courant/puissance candidates (alimentation secteur).
     /// Même logique défensive que les températures : liste non exhaustive,
-    /// clés absentes ignorées silencieusement.
+    /// clés absentes ignorées silencieusement. Libellés en anglais pour la
+    /// même raison que `temperatureKeys` ci-dessus.
     private static let powerKeys: [(key: String, label: String, unit: String)] = [
         ("VD0R", "DC In", "V"), ("ID0R", "DC In", "A"), ("PDTR", "DC In", "W"),
-        ("PSTR", "Système", "W"), ("PPBR", "Batterie", "W"),
+        ("PSTR", "System", "W"), ("PPBR", "Battery", "W"),
     ]
 }

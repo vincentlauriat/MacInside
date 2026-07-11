@@ -13,7 +13,7 @@ struct CPUCardView: View {
         let cpu = model.cpu
         let identity = model.identity
 
-        MetricCard(title: identity.chipName.isEmpty ? "Processeur" : identity.chipName, systemImage: "cpu") {
+        MetricCard(title: identity.chipName.isEmpty ? String(localized: "Processeur") : identity.chipName, systemImage: "cpu") {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(alignment: .top, spacing: 16) {
                     CircularGauge(

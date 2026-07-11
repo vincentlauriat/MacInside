@@ -87,7 +87,7 @@ struct HeaderView: View {
         .frame(minWidth: 150, alignment: .leading)
     }
 
-    private func infoRow(_ label: String, _ value: String) -> some View {
+    private func infoRow(_ label: LocalizedStringKey, _ value: String) -> some View {
         HStack(spacing: 6) {
             Text(label)
                 .font(.caption)
@@ -112,11 +112,11 @@ struct HeaderView: View {
 
     private func thermalLabel(_ state: ProcessInfo.ThermalState) -> String {
         switch state {
-        case .nominal: return "Normal"
-        case .fair: return "Correct"
-        case .serious: return "Élevé"
-        case .critical: return "Critique"
-        @unknown default: return "Inconnu"
+        case .nominal: return String(localized: "Normal")
+        case .fair: return String(localized: "Correct")
+        case .serious: return String(localized: "Élevé")
+        case .critical: return String(localized: "Critique")
+        @unknown default: return String(localized: "Inconnu")
         }
     }
 }

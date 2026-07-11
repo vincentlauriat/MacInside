@@ -24,7 +24,7 @@ struct BatteryCardView: View {
                     .tint(battery.isCharging ? .green : .accentColor)
 
                 infoRow(battery.isCharging ? "Charge complète dans" : "Autonomie restante",
-                        battery.timeRemainingMinutes.map(Formatters.minutes) ?? "Calcul en cours…")
+                        battery.timeRemainingMinutes.map(Formatters.minutes) ?? String(localized: "Calcul en cours…"))
 
                 if battery.isCharging, battery.wattage > 0 {
                     infoRow("Puissance du chargeur", String(format: "%.0f W", battery.wattage))
@@ -36,7 +36,7 @@ struct BatteryCardView: View {
         }
     }
 
-    private func infoRow(_ label: String, _ value: String) -> some View {
+    private func infoRow(_ label: LocalizedStringKey, _ value: String) -> some View {
         HStack {
             Text(label)
                 .font(.caption)
