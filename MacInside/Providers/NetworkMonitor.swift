@@ -73,12 +73,17 @@ final class NetworkMonitor {
         if let previous = previousSample {
             let elapsed = now.timeIntervalSince(previous.date)
             if elapsed > 0 {
-                let deltaIn = bytesIn &- previous.bytesIn
-                let deltaOut = bytesOut &- previous.bytesOut
+                // Compteurs cumulés par interface : peuvent diminuer d'un tick à
+                // l'autre (une interface "en*" apparaît/disparaît — VPN, etc.),
+                // pas seulement augmenter. Une soustraction wrapping (&-) dans ce
+                // cas produirait une valeur proche de UInt64.max, qui fait ensuite
+                // planter la conversion Double → UInt64 dans Formatters.bytes.
+                let deltaIn = bytesIn >= previous.bytesIn ? bytesIn - previous.bytesIn : 0
+                let deltaOut = bytesOut >= previous.bytesOut ? bytesOut - previous.bytesOut : 0
                 stats.downloadBytesPerSec = Double(deltaIn) / elapsed
                 stats.uploadBytesPerSec = Double(deltaOut) / elapsed
-                totalDownloadBytes &+= deltaIn
-                totalUploadBytes &+= deltaOut
+                totalDownloadBytes += deltaIn
+                totalUploadBytes += deltaOut
             }
         }
         previousSample = (bytesIn, bytesOut, now)
