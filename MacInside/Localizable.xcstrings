@@ -531,6 +531,16 @@
         }
       }
     },
+    "Rechercher les mises à jour…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check for Updates…"
+          }
+        }
+      }
+    },
     "Quitter" : {
       "localizations" : {
         "en" : {

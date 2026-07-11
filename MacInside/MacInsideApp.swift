@@ -1,9 +1,21 @@
 import SwiftUI
+import Sparkle
 
 @main
 struct MacInsideApp: App {
     @State private var settings = AppSettings()
     @State private var model: AppModel
+
+    /// `automaticallyDownloadsUpdates` reste à `false` : Sparkle peut vérifier
+    /// en tâche de fond, mais ne doit jamais télécharger/installer sans
+    /// consentement explicite (l'app tournerait le tapis sous l'utilisateur).
+    private let updaterController: SPUStandardUpdaterController = {
+        let controller = SPUStandardUpdaterController(
+            startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+        controller.updater.automaticallyChecksForUpdates = true
+        controller.updater.automaticallyDownloadsUpdates = false
+        return controller
+    }()
 
     init() {
         let settings = AppSettings()
@@ -25,6 +37,11 @@ struct MacInsideApp: App {
         .defaultPosition(.center)
         .commands {
             CommandGroup(replacing: .newItem) {}
+            CommandGroup(after: .appInfo) {
+                Button("Rechercher les mises à jour…") {
+                    updaterController.checkForUpdates(nil)
+                }
+            }
         }
 
         // `SceneBuilder` ne supporte pas les `if`/`if-else` imbriqués comme
