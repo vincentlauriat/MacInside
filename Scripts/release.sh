@@ -1,6 +1,23 @@
 #!/usr/bin/env bash
-# Build → sign (Developer ID + Hardened Runtime) → DMG → notarize → staple.
-# Generic macOS release pipeline (no Sparkle auto-update).
+# Build → sign (Developer ID + Hardened Runtime) → DMG → notarize → staple →
+# Sparkle-sign → refresh appcast.xml.
+#
+# ┌──────────────────────────────────────────────────────────────────────────┐
+# │ SPARKLE SIGNING KEY — DO NOT REGENERATE                                    │
+# │                                                                            │
+# │ Updates are EdDSA-signed with the private key in the login keychain under  │
+# │ account "MacInside" (used by sign_update below) — a key DEDICATED to this  │
+# │ app, not shared with any other Vincent app. Its public half is embedded    │
+# │ as SUPublicEDKey in project.yml:                                           │
+# │     tFXsHOjAq+eXyeVuav0ojm3XQ8SgLVV1HrXvKLJ2U4I=                           │
+# │                                                                            │
+# │ NEVER run `generate_keys` again for this account, and NEVER change         │
+# │ SUPublicEDKey once users have installed a version — it permanently breaks  │
+# │ auto-update for everyone already on an older build (happened once on      │
+# │ MarkdownViewer). Back this key up somewhere safe:                          │
+# │     ./.sparkle-tools/bin/generate_keys -x backup.txt --account MacInside   │
+# │ (write backup.txt to a password manager, then delete the local file).      │
+# └──────────────────────────────────────────────────────────────────────────┘
 #
 # Usage:   ./Scripts/release.sh <version>
 # Example: ./Scripts/release.sh 1.0.0
@@ -72,6 +89,17 @@ codesign_ts() {
   echo "✗ codesign failed for $target" >&2
   return 1
 }
+SPARKLE_FW="$STAGING/Contents/Frameworks/Sparkle.framework"
+if [ -d "$SPARKLE_FW" ]; then
+  echo "▶︎ codesign Sparkle.framework nested binaries (deepest first)"
+  SPARKLE_VER="$SPARKLE_FW/Versions/B"
+  codesign_ts "$SPARKLE_VER/Autoupdate"
+  codesign_ts "$SPARKLE_VER/XPCServices/Downloader.xpc"
+  codesign_ts "$SPARKLE_VER/XPCServices/Installer.xpc"
+  codesign_ts "$SPARKLE_VER/Updater.app"
+  codesign_ts "$SPARKLE_FW"
+fi
+
 echo "▶︎ codesign (Developer ID, Hardened Runtime)"
 codesign_ts "$STAGING"
 codesign --verify --strict --deep --verbose=1 "$STAGING"
@@ -130,9 +158,60 @@ echo "▶︎ staple"
 xcrun stapler staple "$DMG"
 xcrun stapler validate "$DMG"
 
+# 7. Sign the DMG with the Sparkle EdDSA key and refresh appcast.xml so the
+#    in-app updater (Sparkle 2) can serve this version.
+SPARKLE_VERSION="2.9.1"
+SPARKLE_TOOLS="$ROOT/.sparkle-tools"
+if [ ! -x "$SPARKLE_TOOLS/bin/sign_update" ]; then
+  echo "▶︎ fetching Sparkle $SPARKLE_VERSION tools (one-time setup)"
+  mkdir -p "$SPARKLE_TOOLS"
+  curl -fsSL "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz" \
+    | tar -xJ -C "$SPARKLE_TOOLS"
+fi
+
+echo "▶︎ sign DMG with Sparkle EdDSA key (account: $APP_NAME)"
+# `sign_update` prints: sparkle:edSignature="..." length="<bytes>"
+# (so we don't add `length=` ourselves on <enclosure> — that would duplicate).
+SPARKLE_SIG_LINE="$("$SPARKLE_TOOLS/bin/sign_update" --account "$APP_NAME" "$DMG")"
+
+# Sparkle compares <sparkle:version> against the running app's CFBundleVersion
+# (a monotonically increasing build number), NOT the marketing version — read
+# the actual value baked into the built .app rather than assuming BUILD_NUMBER.
+APP_BUILD_NUMBER="$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$STAGING/Contents/Info.plist")"
+
+echo "▶︎ writing appcast.xml (sparkle:version=$APP_BUILD_NUMBER, shortVersionString=$VERSION)"
+PUB_DATE="$(date -R)"
+cat > "$ROOT/appcast.xml" <<APPCAST
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>$APP_NAME</title>
+    <link>https://raw.githubusercontent.com/vincentlauriat/$APP_NAME/main/appcast.xml</link>
+    <description>$APP_NAME release feed</description>
+    <language>en</language>
+    <item>
+      <title>v$VERSION</title>
+      <pubDate>$PUB_DATE</pubDate>
+      <sparkle:version>$APP_BUILD_NUMBER</sparkle:version>
+      <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:releaseNotesLink>https://github.com/vincentlauriat/$APP_NAME/releases/tag/v$VERSION</sparkle:releaseNotesLink>
+      <enclosure
+        url="https://github.com/vincentlauriat/$APP_NAME/releases/download/v$VERSION/$DMG_SLUG-$VERSION.dmg"
+        type="application/octet-stream"
+        $SPARKLE_SIG_LINE />
+    </item>
+  </channel>
+</rss>
+APPCAST
+
 SIZE="$(du -h "$DMG" | cut -f1 | tr -d ' ')"
 echo
-echo "✅ Built, signed, notarized & stapled: $(basename "$DMG") ($SIZE)"
+echo "✅ Built, signed, notarized, stapled & Sparkle-signed: $(basename "$DMG") ($SIZE)"
+echo "✅ appcast.xml written for v$VERSION"
 echo
 echo "Publish on GitHub:"
 echo "  gh release create v$VERSION \"$DMG\" --title \"v$VERSION\" --generate-notes"
+echo "  git add appcast.xml && git commit -m 'docs: appcast for v$VERSION' && git push"
+echo
+echo "After both, Sparkle clients on older versions will be offered the update on next check."
