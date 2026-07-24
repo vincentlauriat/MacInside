@@ -14,6 +14,7 @@ final class AppModel {
     private(set) var sensors = SensorStats()
     private(set) var battery = BatteryStats()
     private(set) var gpu = GPUStats()
+    private(set) var accessoryBatteries = AccessoryBatteryStats()
 
     private let identityProvider = SystemIdentityProvider()
     private let cpuMonitor = CPUMonitor()
@@ -24,6 +25,7 @@ final class AppModel {
     private let batteryMonitor = BatteryMonitor()
     private let batteryAlertMonitor = BatteryAlertMonitor()
     private let gpuMonitor = GPUMonitor()
+    private let accessoryBatteryMonitor = AccessoryBatteryMonitor()
     private let processMonitor = ProcessMonitor()
     private let publicAddressLookup = PublicAddressLookup()
 
@@ -71,6 +73,7 @@ final class AppModel {
         battery = batteryMonitor.snapshot()
         batteryAlertMonitor.evaluate(battery: battery, settings: settings)
         gpu = gpuMonitor.snapshot()
+        accessoryBatteries = accessoryBatteryMonitor.snapshot()
 
         Task { [weak self] in
             guard let self, let result = await self.publicAddressLookup.current() else { return }

@@ -146,6 +146,21 @@ struct GPUStats: Equatable {
     }
 }
 
+struct AccessoryBatteryReading: Identifiable, Equatable {
+    var id: String { name + part }
+    var name: String
+    /// Brut ("", "Left", "Right", "Case"), tel que renvoyé par
+    /// `system_profiler` — localisé à l'affichage (cf. `AccessoryBatteryCardView`),
+    /// pas ici (`name`, lui, est un nom d'appareil choisi par l'utilisateur et
+    /// ne doit jamais être traduit).
+    var part: String
+    var percent: Int
+}
+
+struct AccessoryBatteryStats: Equatable {
+    var accessories: [AccessoryBatteryReading] = []
+}
+
 struct BatteryStats: Equatable {
     var isPresent: Bool = false
     var percentage: Int = 0

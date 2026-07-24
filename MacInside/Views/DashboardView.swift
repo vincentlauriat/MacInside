@@ -49,6 +49,7 @@ struct DashboardView: View {
         case .temperature: TemperatureCardView()
         case .power: PowerCardView()
         case .battery: BatteryCardView()
+        case .accessoryBatteries: AccessoryBatteryCardView()
         }
     }
 

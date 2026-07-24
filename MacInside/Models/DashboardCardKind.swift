@@ -13,6 +13,7 @@ enum DashboardCardKind: String, CaseIterable, Identifiable {
     case temperature
     case power
     case battery
+    case accessoryBatteries
 
     var id: String { rawValue }
 }
