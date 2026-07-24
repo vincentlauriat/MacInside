@@ -75,11 +75,9 @@ final class NetworkMonitor {
             if elapsed > 0 {
                 // Compteurs cumulés par interface : peuvent diminuer d'un tick à
                 // l'autre (une interface "en*" apparaît/disparaît — VPN, etc.),
-                // pas seulement augmenter. Une soustraction wrapping (&-) dans ce
-                // cas produirait une valeur proche de UInt64.max, qui fait ensuite
-                // planter la conversion Double → UInt64 dans Formatters.bytes.
-                let deltaIn = bytesIn >= previous.bytesIn ? bytesIn - previous.bytesIn : 0
-                let deltaOut = bytesOut >= previous.bytesOut ? bytesOut - previous.bytesOut : 0
+                // pas seulement augmenter (cf. SafeDelta).
+                let deltaIn = SafeDelta.of(bytesIn, since: previous.bytesIn)
+                let deltaOut = SafeDelta.of(bytesOut, since: previous.bytesOut)
                 stats.downloadBytesPerSec = Double(deltaIn) / elapsed
                 stats.uploadBytesPerSec = Double(deltaOut) / elapsed
                 totalDownloadBytes += deltaIn

@@ -27,11 +27,9 @@ final class DiskMonitor {
             if elapsed > 0 {
                 // Compteurs cumulés depuis le boot : peuvent diminuer d'un tick
                 // à l'autre si un disque externe est débranché entre deux
-                // lectures. Une soustraction wrapping (&-) produirait alors une
-                // valeur proche de UInt64.max (cf. bug déjà corrigé sur le
-                // réseau, voir CHANGES.md).
-                let deltaRead = bytesRead >= previous.bytesRead ? bytesRead - previous.bytesRead : 0
-                let deltaWrite = bytesWritten >= previous.bytesWritten ? bytesWritten - previous.bytesWritten : 0
+                // lectures, pas seulement augmenter (cf. SafeDelta).
+                let deltaRead = SafeDelta.of(bytesRead, since: previous.bytesRead)
+                let deltaWrite = SafeDelta.of(bytesWritten, since: previous.bytesWritten)
                 stats.readBytesPerSec = Double(deltaRead) / elapsed
                 stats.writeBytesPerSec = Double(deltaWrite) / elapsed
                 totalReadBytes += deltaRead

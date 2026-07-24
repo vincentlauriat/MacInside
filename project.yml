@@ -21,8 +21,13 @@ schemes:
     build:
       targets:
         MacInside: all
+        MacInsideTests: [test]
     run:
       config: Debug
+    test:
+      config: Debug
+      targets:
+        - MacInsideTests
     archive:
       config: Release
 
@@ -70,3 +75,17 @@ targets:
         LSUIElement: false
         NSHumanReadableCopyright: "© 2026 Vincent Lauriat"
         NSHighResolutionCapable: true
+
+  MacInsideTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: MacInsideTests
+    dependencies:
+      - target: MacInside
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        GENERATE_INFOPLIST_FILE: YES
