@@ -33,6 +33,11 @@ struct TemperatureCardView: View {
                 // partagée avec les autres colonnes — c'est la fenêtre entière
                 // (ScrollView de DashboardView) qui défile si besoin.
                 VStack(spacing: 4) {
+                    if !sensors.temperatureHistory.isEmpty {
+                        SparklineChart(values: sensors.temperatureHistory, color: .red)
+                            .frame(height: 32)
+                            .padding(.bottom, 6)
+                    }
                     ForEach(temperatures) { reading in
                         HStack {
                             Text(reading.label)

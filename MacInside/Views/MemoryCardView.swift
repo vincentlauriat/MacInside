@@ -8,6 +8,7 @@ struct MemoryCardView: View {
     private let activeColor = Color.blue
     private let compressedColor = Color.orange
     private let availableColor = Color.mint
+    private let trendColor = Color.indigo
 
     var body: some View {
         let memory = model.memory
@@ -27,6 +28,11 @@ struct MemoryCardView: View {
                         LegendRow(color: compressedColor, label: "Compressée", value: Formatters.bytes(memory.compressedBytes))
                         LegendRow(color: availableColor, label: "Disponible", value: Formatters.bytes(memory.availableBytes))
                     }
+                }
+
+                if !memory.loadHistory.isEmpty {
+                    SparklineChart(values: memory.loadHistory, color: trendColor)
+                        .frame(height: 32)
                 }
 
                 ProcessListView(entries: memory.topProcesses, rowCount: 6) { process in

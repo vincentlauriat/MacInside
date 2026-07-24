@@ -10,6 +10,8 @@ import Foundation
 /// valeur hors plage plausible, plutôt que de viser l'exhaustivité.
 final class SensorMonitor {
     private let client = SMCClient()
+    private var temperatureHistory: [Double] = []
+    private let historyLimit = 60
 
     func snapshot() -> SensorStats {
         guard client.isOpen else { return SensorStats(available: false) }
@@ -23,7 +25,21 @@ final class SensorMonitor {
         guard !temperatures.isEmpty || hasFans else {
             return SensorStats(available: false)
         }
-        return SensorStats(available: true, hasFans: hasFans, temperatures: temperatures, fans: fans, power: power)
+
+        // Tendance = max des capteurs hors "Battery" (déjà affichés à part
+        // dans la carte Batterie, cf. Phase 3.1) — sinon la même valeur
+        // réapparaîtrait dans deux cartes différentes.
+        let nonBatteryTemperatures = temperatures.filter { !$0.label.hasPrefix("Battery") }
+        if let maxCelsius = nonBatteryTemperatures.map(\.celsius).max() {
+            temperatureHistory.append(maxCelsius)
+            if temperatureHistory.count > historyLimit {
+                temperatureHistory.removeFirst(temperatureHistory.count - historyLimit)
+            }
+        }
+
+        return SensorStats(
+            available: true, hasFans: hasFans, temperatures: temperatures, fans: fans, power: power,
+            temperatureHistory: temperatureHistory)
     }
 
     /// Présence de la clé `FNum` : distingue "ce Mac n'a pas de ventilateur"

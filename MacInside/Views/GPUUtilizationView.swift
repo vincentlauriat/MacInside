@@ -19,6 +19,11 @@ struct GPUUtilizationView: View {
                 labeledBar("Utilisation", Double(gpu.deviceUtilizationPercent))
                 labeledBar("Utilisation mémoire", gpu.memoryUsagePercent)
 
+                if !gpu.loadHistory.isEmpty {
+                    SparklineChart(values: gpu.loadHistory, color: .pink)
+                        .frame(height: 32)
+                }
+
                 VStack(spacing: 6) {
                     row("Utilisation appareil %", "\(gpu.deviceUtilizationPercent)")
                     row("Utilisation renderer %", "\(gpu.rendererUtilizationPercent)")

@@ -8,6 +8,7 @@ struct CPUCardView: View {
     private let userColor = Color.blue
     private let performanceColor = Color.blue
     private let efficiencyColor = Color.teal
+    private let trendColor = Color.green
 
     var body: some View {
         let cpu = model.cpu
@@ -29,6 +30,11 @@ struct CPUCardView: View {
                         LegendRow(color: systemColor, label: "Système", value: Formatters.percent(cpu.systemPercent))
                         LegendRow(color: userColor, label: "Utilisateur", value: Formatters.percent(cpu.userPercent))
                     }
+                }
+
+                if !cpu.loadHistory.isEmpty {
+                    SparklineChart(values: cpu.loadHistory, color: trendColor)
+                        .frame(height: 32)
                 }
 
                 ProcessListView(entries: cpu.topProcesses, rowCount: 6) { process in

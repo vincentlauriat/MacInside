@@ -117,6 +117,10 @@ struct SensorStats: Equatable {
     var temperatures: [SensorReading] = []
     var fans: [FanReading] = []
     var power: [PowerReading] = []
+    /// Historique de la température maximale relevée (hors capteurs
+    /// "Battery", déjà affichés à part dans la carte Batterie) : une seule
+    /// tendance agrégée plutôt qu'un graphique par capteur SMC individuel.
+    var temperatureHistory: [Double] = []
 }
 
 struct GPUStats: Equatable {
@@ -127,6 +131,7 @@ struct GPUStats: Equatable {
     var inUseSystemMemoryBytes: UInt64 = 0
     var allocSystemMemoryBytes: UInt64 = 0
     var recoveryCount: Int = 0
+    var loadHistory: [Double] = []
 
     var memoryUsagePercent: Double {
         allocSystemMemoryBytes == 0 ? 0 : Double(inUseSystemMemoryBytes) / Double(allocSystemMemoryBytes) * 100

@@ -6,6 +6,9 @@ import IOKit
 /// de monitoring open-source — AGXAccelerator sur Apple Silicon, pilotes
 /// Intel/AMD sur les Mac Intel). Dégrade proprement si absent.
 final class GPUMonitor {
+    private var history: [Double] = []
+    private let historyLimit = 60
+
     func snapshot() -> GPUStats {
         var stats = GPUStats()
 
@@ -33,6 +36,12 @@ final class GPUMonitor {
             stats.allocSystemMemoryBytes = (perf["Alloc system memory"] as? Int).map { UInt64($0) } ?? 0
             stats.recoveryCount = perf["recoveryCount"] as? Int ?? 0
             break // premier accélérateur actif suffit (un seul GPU sur la quasi-totalité des Mac)
+        }
+
+        if stats.available {
+            history.append(Double(stats.deviceUtilizationPercent))
+            if history.count > historyLimit { history.removeFirst(history.count - historyLimit) }
+            stats.loadHistory = history
         }
 
         return stats
