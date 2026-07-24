@@ -1,6 +1,5 @@
 import SwiftUI
 import UniformTypeIdentifiers
-import AppKit
 
 /// Grille "masonry" maison plutôt qu'un `LazyVGrid` : dans un `LazyVGrid`,
 /// toutes les cartes d'une même ligne partagent la hauteur de la plus haute
@@ -75,41 +74,32 @@ struct DashboardView: View {
         }
     }
 
+    /// Revenu à un `.onDrag` sur toute la carte (comme avant) après retour de
+    /// Vincent : la version restreinte à la seule poignée (icône barres
+    /// horizontales) empêchait tout déplacement plutôt que de le fiabiliser —
+    /// jamais vérifiée par un vrai geste de glisser (l'automatisation de ce
+    /// geste n'est pas fiable dans cet environnement), seulement par capture
+    /// d'écran statique, donc la régression n'avait pas été détectée avant
+    /// que Vincent ne la constate. La poignée reste affichée à titre indicatif
+    /// (aspect inchangé), mais ne conditionne plus le glisser.
     private func draggableCard(_ kind: DashboardCardKind) -> some View {
         cardView(for: kind)
             .overlay(alignment: .topTrailing) {
-                dragHandle(kind)
+                Image(systemName: "line.3.horizontal")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .padding(10)
             }
             .opacity(draggedKind == kind ? 0.4 : 1)
+            .onDrag {
+                draggedKind = kind
+                return NSItemProvider(object: kind.rawValue as NSString)
+            }
             .onDrop(of: [.text], delegate: CardDropDelegate(
                 target: kind,
                 draggedKind: $draggedKind,
                 move: moveCard
             ))
-    }
-
-    /// Seule cette poignée déclenche le glisser, pas la carte entière : poser
-    /// `.onDrag` sur toute la surface de la carte la faisait entrer en
-    /// conflit avec ses propres interactions (menu contextuel des process,
-    /// boutons), rendant le déplacement imprécis. Le curseur "main" au survol
-    /// confirme visuellement la zone réellement saisissable.
-    private func dragHandle(_ kind: DashboardCardKind) -> some View {
-        Image(systemName: "line.3.horizontal")
-            .font(.caption2)
-            .foregroundStyle(.tertiary)
-            .padding(10)
-            .contentShape(Rectangle())
-            .onHover { isHovering in
-                if isHovering {
-                    NSCursor.openHand.push()
-                } else {
-                    NSCursor.pop()
-                }
-            }
-            .onDrag {
-                draggedKind = kind
-                return NSItemProvider(object: kind.rawValue as NSString)
-            }
     }
 
     /// Déplace `kind` juste avant `target` dans l'ordre persisté — les cartes
