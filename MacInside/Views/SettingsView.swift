@@ -1,12 +1,43 @@
 import SwiftUI
 
+/// Fenêtre de Réglages en onglets plutôt qu'un unique `Form` qui empile toutes
+/// les sections : avec 7 sections (Apparence, Rafraîchissement, Démarrage,
+/// Cartes du dashboard, Barre de menu, Alertes batterie, À propos), la version
+/// précédente calculait une hauteur de fenêtre qui dépassait 1200pt — chaque
+/// nouvelle sous-phase de la Phase 3 l'a fait grandir un peu plus. Ici, une
+/// seule taille de fenêtre fixe suffit puisqu'un seul onglet est visible à la
+/// fois (même principe que les Préférences Xcode ou Réglages Système).
 struct SettingsView: View {
-    @Environment(AppSettings.self) private var settings
     @Environment(AppModel.self) private var model
 
     var body: some View {
-        @Bindable var settings = settings
+        TabView {
+            GeneralSettingsPane()
+                .tabItem { Label("Général", systemImage: "gearshape") }
 
+            DashboardSettingsPane()
+                .tabItem { Label("Dashboard", systemImage: "square.grid.2x2") }
+
+            MenuBarSettingsPane()
+                .tabItem { Label("Barre de menu", systemImage: "menubar.rectangle") }
+
+            if model.battery.isPresent {
+                BatterySettingsPane()
+                    .tabItem { Label("Batterie", systemImage: "battery.100") }
+            }
+
+            AboutSettingsPane()
+                .tabItem { Label("À propos", systemImage: "info.circle") }
+        }
+        .frame(width: 480, height: 460)
+    }
+}
+
+private struct GeneralSettingsPane: View {
+    @Environment(AppSettings.self) private var settings
+
+    var body: some View {
+        @Bindable var settings = settings
         Form {
             Section("Apparence") {
                 Picker("Apparence", selection: $settings.appearanceRaw) {
@@ -34,76 +65,30 @@ struct SettingsView: View {
             Section("Démarrage") {
                 Toggle("Démarrer à l'ouverture de session", isOn: $settings.launchAtLogin)
             }
+        }
+        .formStyle(.grouped)
+    }
+}
 
+private struct DashboardSettingsPane: View {
+    @Environment(AppSettings.self) private var settings
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        @Bindable var settings = settings
+        Form {
             Section("Cartes du dashboard") {
                 ForEach(visibleCardKinds) { kind in
                     Toggle(kind.label, isOn: cardVisibilityBinding(for: kind))
                 }
             }
-
-            Section("Barre de menu") {
-                Picker("Style", selection: $settings.menuBarModeRaw) {
-                    ForEach(MenuBarMode.allCases) { mode in
-                        Text(mode.label).tag(mode.rawValue)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-
-                if settings.menuBarMode == .separate {
-                    Toggle("CPU", isOn: $settings.showCPUMenuExtra)
-                    Toggle("Mémoire", isOn: $settings.showMemoryMenuExtra)
-                    Toggle("Réseau", isOn: $settings.showNetworkMenuExtra)
-                    Toggle("Disque", isOn: $settings.showDiskMenuExtra)
-                    Toggle("Batterie", isOn: $settings.showBatteryMenuExtra)
-                    Toggle("GPU", isOn: $settings.showGPUMenuExtra)
-                }
-            }
-
-            if model.battery.isPresent {
-                Section("Alertes batterie") {
-                    Toggle("Alerte batterie faible", isOn: $settings.lowBatteryAlertEnabled)
-                        .onChange(of: settings.lowBatteryAlertEnabled) { _, enabled in
-                            if enabled { model.requestBatteryAlertAuthorization() }
-                        }
-                    if settings.lowBatteryAlertEnabled {
-                        Stepper(value: $settings.lowBatteryAlertThreshold, in: 5...50, step: 5) {
-                            Text("Seuil bas")
-                        }
-                        Text(Formatters.percent(Double(settings.lowBatteryAlertThreshold)))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Toggle("Alerte batterie chargée", isOn: $settings.highBatteryAlertEnabled)
-                        .onChange(of: settings.highBatteryAlertEnabled) { _, enabled in
-                            if enabled { model.requestBatteryAlertAuthorization() }
-                        }
-                    if settings.highBatteryAlertEnabled {
-                        Stepper(value: $settings.highBatteryAlertThreshold, in: 50...100, step: 5) {
-                            Text("Seuil haut")
-                        }
-                        Text(Formatters.percent(Double(settings.highBatteryAlertThreshold)))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-
-            Section("À propos") {
-                Text("MacInside — tableau de bord système macOS.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-            }
         }
         .formStyle(.grouped)
-        .frame(width: 420, height: windowHeight)
     }
 
-    /// Cartes proposées dans « Cartes du dashboard » : mêmes règles de
-    /// visibilité conditionnelle que le dashboard lui-même (ex. Batterie
-    /// absente sur un Mac de bureau) — pas de toggle pour une carte qui ne
-    /// s'affichera de toute façon jamais.
+    /// Mêmes règles de visibilité conditionnelle que le dashboard lui-même
+    /// (ex. Batterie absente sur un Mac de bureau) — pas de toggle pour une
+    /// carte qui ne s'affichera de toute façon jamais.
     private var visibleCardKinds: [DashboardCardKind] {
         settings.dashboardCardOrder.filter { $0 != .battery || model.battery.isPresent }
     }
@@ -118,17 +103,87 @@ struct SettingsView: View {
             }
         )
     }
+}
 
-    private var windowHeight: CGFloat {
-        var height: CGFloat = 340
-        if settings.menuBarMode == .separate { height += 220 }
-        if model.battery.isPresent {
-            height += 150
-            if settings.lowBatteryAlertEnabled { height += 70 }
-            if settings.highBatteryAlertEnabled { height += 70 }
+private struct MenuBarSettingsPane: View {
+    @Environment(AppSettings.self) private var settings
+
+    var body: some View {
+        @Bindable var settings = settings
+        Form {
+            Section("Style") {
+                Picker("Style", selection: $settings.menuBarModeRaw) {
+                    ForEach(MenuBarMode.allCases) { mode in
+                        Text(mode.label).tag(mode.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
+
+            if settings.menuBarMode == .separate {
+                Section("Icônes affichées") {
+                    Toggle("CPU", isOn: $settings.showCPUMenuExtra)
+                    Toggle("Mémoire", isOn: $settings.showMemoryMenuExtra)
+                    Toggle("Réseau", isOn: $settings.showNetworkMenuExtra)
+                    Toggle("Disque", isOn: $settings.showDiskMenuExtra)
+                    Toggle("Batterie", isOn: $settings.showBatteryMenuExtra)
+                    Toggle("GPU", isOn: $settings.showGPUMenuExtra)
+                }
+            }
         }
-        height += 90 // Section « Démarrage »
-        height += 60 + CGFloat(visibleCardKinds.count) * 34 // Section « Cartes du dashboard »
-        return height
+        .formStyle(.grouped)
+    }
+}
+
+private struct BatterySettingsPane: View {
+    @Environment(AppSettings.self) private var settings
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        @Bindable var settings = settings
+        Form {
+            Section("Alertes batterie") {
+                Toggle("Alerte batterie faible", isOn: $settings.lowBatteryAlertEnabled)
+                    .onChange(of: settings.lowBatteryAlertEnabled) { _, enabled in
+                        if enabled { model.requestBatteryAlertAuthorization() }
+                    }
+                if settings.lowBatteryAlertEnabled {
+                    Stepper(value: $settings.lowBatteryAlertThreshold, in: 5...50, step: 5) {
+                        Text("Seuil bas")
+                    }
+                    Text(Formatters.percent(Double(settings.lowBatteryAlertThreshold)))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Toggle("Alerte batterie chargée", isOn: $settings.highBatteryAlertEnabled)
+                    .onChange(of: settings.highBatteryAlertEnabled) { _, enabled in
+                        if enabled { model.requestBatteryAlertAuthorization() }
+                    }
+                if settings.highBatteryAlertEnabled {
+                    Stepper(value: $settings.highBatteryAlertThreshold, in: 50...100, step: 5) {
+                        Text("Seuil haut")
+                    }
+                    Text(Formatters.percent(Double(settings.highBatteryAlertThreshold)))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .formStyle(.grouped)
+    }
+}
+
+private struct AboutSettingsPane: View {
+    var body: some View {
+        Form {
+            Section("À propos") {
+                Text("MacInside — tableau de bord système macOS.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
     }
 }
