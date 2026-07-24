@@ -22,6 +22,7 @@ final class AppModel {
     private let networkMonitor = NetworkMonitor()
     private let sensorMonitor = SensorMonitor()
     private let batteryMonitor = BatteryMonitor()
+    private let batteryAlertMonitor = BatteryAlertMonitor()
     private let gpuMonitor = GPUMonitor()
     private let processMonitor = ProcessMonitor()
     private let publicAddressLookup = PublicAddressLookup()
@@ -49,6 +50,10 @@ final class AppModel {
         refreshTask = nil
     }
 
+    func requestBatteryAlertAuthorization() {
+        batteryAlertMonitor.requestAuthorizationIfNeeded()
+    }
+
     private func refresh() {
         identity = identityProvider.snapshot()
 
@@ -64,6 +69,7 @@ final class AppModel {
         network = networkMonitor.snapshot()
         sensors = sensorMonitor.snapshot()
         battery = batteryMonitor.snapshot()
+        batteryAlertMonitor.evaluate(battery: battery, settings: settings)
         gpu = gpuMonitor.snapshot()
 
         Task { [weak self] in

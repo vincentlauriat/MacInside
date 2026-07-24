@@ -55,6 +55,18 @@ final class AppSettings {
     var dashboardCardOrderRaw: String {
         didSet { UserDefaults.standard.set(dashboardCardOrderRaw, forKey: "dashboardCardOrder") }
     }
+    var lowBatteryAlertEnabled: Bool {
+        didSet { UserDefaults.standard.set(lowBatteryAlertEnabled, forKey: "lowBatteryAlertEnabled") }
+    }
+    var lowBatteryAlertThreshold: Int {
+        didSet { UserDefaults.standard.set(lowBatteryAlertThreshold, forKey: "lowBatteryAlertThreshold") }
+    }
+    var highBatteryAlertEnabled: Bool {
+        didSet { UserDefaults.standard.set(highBatteryAlertEnabled, forKey: "highBatteryAlertEnabled") }
+    }
+    var highBatteryAlertThreshold: Int {
+        didSet { UserDefaults.standard.set(highBatteryAlertThreshold, forKey: "highBatteryAlertThreshold") }
+    }
 
     init() {
         let defaults = UserDefaults.standard
@@ -70,6 +82,11 @@ final class AppSettings {
         showBatteryMenuExtra = defaults.object(forKey: "showBatteryMenuExtra") as? Bool ?? false
         showGPUMenuExtra = defaults.object(forKey: "showGPUMenuExtra") as? Bool ?? false
         dashboardCardOrderRaw = defaults.string(forKey: "dashboardCardOrder") ?? ""
+
+        lowBatteryAlertEnabled = defaults.object(forKey: "lowBatteryAlertEnabled") as? Bool ?? true
+        lowBatteryAlertThreshold = defaults.object(forKey: "lowBatteryAlertThreshold") as? Int ?? 20
+        highBatteryAlertEnabled = defaults.object(forKey: "highBatteryAlertEnabled") as? Bool ?? false
+        highBatteryAlertThreshold = defaults.object(forKey: "highBatteryAlertThreshold") as? Int ?? 90
     }
 
     var appearance: AppearanceMode { AppearanceMode(rawValue: appearanceRaw) ?? .system }

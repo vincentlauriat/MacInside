@@ -740,6 +740,96 @@
           }
         }
       }
+    },
+    "Alertes batterie" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battery alerts"
+          }
+        }
+      }
+    },
+    "Alerte batterie faible" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low battery alert"
+          }
+        }
+      }
+    },
+    "Seuil bas" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low threshold"
+          }
+        }
+      }
+    },
+    "Alerte batterie chargée" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fully charged alert"
+          }
+        }
+      }
+    },
+    "Seuil haut" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High threshold"
+          }
+        }
+      }
+    },
+    "Batterie faible" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low battery"
+          }
+        }
+      }
+    },
+    "Batterie chargée" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battery charged"
+          }
+        }
+      }
+    },
+    "%@ restants." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ remaining."
+          }
+        }
+      }
+    },
+    "%@ — vous pouvez débrancher le chargeur." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ — you can unplug the charger."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

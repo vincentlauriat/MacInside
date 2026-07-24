@@ -104,6 +104,7 @@ struct MacInsideApp: App {
         Settings {
             SettingsView()
                 .environment(settings)
+                .environment(model)
         }
     }
 
