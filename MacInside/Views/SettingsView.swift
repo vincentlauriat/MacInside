@@ -149,12 +149,7 @@ private struct BatterySettingsPane: View {
                         if enabled { model.requestBatteryAlertAuthorization() }
                     }
                 if settings.lowBatteryAlertEnabled {
-                    Stepper(value: $settings.lowBatteryAlertThreshold, in: 5...50, step: 5) {
-                        Text("Seuil bas")
-                    }
-                    Text(Formatters.percent(Double(settings.lowBatteryAlertThreshold)))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    thresholdRow("Seuil bas", value: $settings.lowBatteryAlertThreshold, in: 5...50)
                 }
 
                 Toggle("Alerte batterie chargée", isOn: $settings.highBatteryAlertEnabled)
@@ -162,16 +157,37 @@ private struct BatterySettingsPane: View {
                         if enabled { model.requestBatteryAlertAuthorization() }
                     }
                 if settings.highBatteryAlertEnabled {
-                    Stepper(value: $settings.highBatteryAlertThreshold, in: 50...100, step: 5) {
-                        Text("Seuil haut")
-                    }
-                    Text(Formatters.percent(Double(settings.highBatteryAlertThreshold)))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    thresholdRow("Seuil haut", value: $settings.highBatteryAlertThreshold, in: 50...100)
                 }
             }
         }
         .formStyle(.grouped)
+    }
+
+    /// Curseur avec la valeur affichée en ligne (label + pourcentage), plutôt
+    /// que le `Stepper` + légende séparée précédents : un seul geste direct
+    /// pour ajuster, sans flèches +/- à répéter, et le pourcentage courant
+    /// reste visible pendant le glissement.
+    private func thresholdRow(_ label: LocalizedStringKey, value: Binding<Int>, in range: ClosedRange<Int>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(label)
+                    .font(.callout)
+                Spacer()
+                Text(Formatters.percent(Double(value.wrappedValue)))
+                    .font(.callout.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            Slider(
+                value: Binding(
+                    get: { Double(value.wrappedValue) },
+                    set: { value.wrappedValue = Int($0) }
+                ),
+                in: Double(range.lowerBound)...Double(range.upperBound),
+                step: 5
+            )
+        }
+        .padding(.vertical, 2)
     }
 }
 
@@ -182,6 +198,11 @@ private struct AboutSettingsPane: View {
                 Text("MacInside — tableau de bord système macOS.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
+
+                // Signature volontairement non localisée (pas une chaîne UI,
+                // un crédit fixe demandé tel quel par Vincent).
+                Link("Design with love by Vincent Lauriat", destination: URL(string: "http://lauriat.fr")!)
+                    .font(.caption)
             }
         }
         .formStyle(.grouped)

@@ -1,5 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import AppKit
 
 /// Grille "masonry" maison plutôt qu'un `LazyVGrid` : dans un `LazyVGrid`,
 /// toutes les cartes d'une même ligne partagent la hauteur de la plus haute
@@ -77,16 +78,9 @@ struct DashboardView: View {
     private func draggableCard(_ kind: DashboardCardKind) -> some View {
         cardView(for: kind)
             .overlay(alignment: .topTrailing) {
-                Image(systemName: "line.3.horizontal")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .padding(10)
+                dragHandle(kind)
             }
             .opacity(draggedKind == kind ? 0.4 : 1)
-            .onDrag {
-                draggedKind = kind
-                return NSItemProvider(object: kind.rawValue as NSString)
-            }
             .onDrop(of: [.text], delegate: CardDropDelegate(
                 target: kind,
                 draggedKind: $draggedKind,
@@ -94,9 +88,36 @@ struct DashboardView: View {
             ))
     }
 
+    /// Seule cette poignée déclenche le glisser, pas la carte entière : poser
+    /// `.onDrag` sur toute la surface de la carte la faisait entrer en
+    /// conflit avec ses propres interactions (menu contextuel des process,
+    /// boutons), rendant le déplacement imprécis. Le curseur "main" au survol
+    /// confirme visuellement la zone réellement saisissable.
+    private func dragHandle(_ kind: DashboardCardKind) -> some View {
+        Image(systemName: "line.3.horizontal")
+            .font(.caption2)
+            .foregroundStyle(.tertiary)
+            .padding(10)
+            .contentShape(Rectangle())
+            .onHover { isHovering in
+                if isHovering {
+                    NSCursor.openHand.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
+            .onDrag {
+                draggedKind = kind
+                return NSItemProvider(object: kind.rawValue as NSString)
+            }
+    }
+
     /// Déplace `kind` juste avant `target` dans l'ordre persisté — les cartes
     /// masquées (ex. Batterie absente) restent à leur position dans l'ordre
-    /// stocké, seul l'ordre relatif des cartes visibles change.
+    /// stocké, seul l'ordre relatif des cartes visibles change. Animé : sans
+    /// ça, la grille se réarrangeait d'un coup sec (chaque carte peut changer
+    /// de colonne, pas seulement de position), ce qui rendait le résultat du
+    /// glisser difficile à suivre.
     private func moveCard(_ kind: DashboardCardKind, before target: DashboardCardKind) {
         guard kind != target else { return }
         var order = settings.dashboardCardOrder
@@ -104,7 +125,9 @@ struct DashboardView: View {
         order.remove(at: fromIndex)
         let toIndex = order.firstIndex(of: target) ?? order.count
         order.insert(kind, at: toIndex)
-        settings.dashboardCardOrder = order
+        withAnimation(.easeInOut(duration: 0.2)) {
+            settings.dashboardCardOrder = order
+        }
     }
 }
 
