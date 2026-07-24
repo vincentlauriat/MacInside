@@ -102,19 +102,31 @@ struct DashboardView: View {
             ))
     }
 
-    /// Déplace `kind` juste avant `target` dans l'ordre persisté — les cartes
-    /// masquées (ex. Batterie absente) restent à leur position dans l'ordre
-    /// stocké, seul l'ordre relatif des cartes visibles change. Animé : sans
-    /// ça, la grille se réarrangeait d'un coup sec (chaque carte peut changer
-    /// de colonne, pas seulement de position), ce qui rendait le résultat du
-    /// glisser difficile à suivre.
-    private func moveCard(_ kind: DashboardCardKind, before target: DashboardCardKind) {
+    /// Déplace `kind` relativement à `target` dans l'ordre persisté — les
+    /// cartes masquées (ex. Batterie absente) restent à leur position dans
+    /// l'ordre stocké, seul l'ordre relatif des cartes visibles change.
+    ///
+    /// Insère avant ou après `target` selon le sens du déplacement (comparaison
+    /// des index d'origine) plutôt que toujours avant : en insérant
+    /// systématiquement avant la carte survolée, il était impossible de placer
+    /// une carte sous une autre (en particulier en dernière position d'une
+    /// colonne, puisque survoler la dernière carte ne faisait que la remettre
+    /// avant elle) — signalé par Vincent.
+    ///
+    /// Animé : sans ça, la grille se réarrangeait d'un coup sec (chaque carte
+    /// peut changer de colonne, pas seulement de position), ce qui rendait le
+    /// résultat du glisser difficile à suivre.
+    private func moveCard(_ kind: DashboardCardKind, relativeTo target: DashboardCardKind) {
         guard kind != target else { return }
         var order = settings.dashboardCardOrder
-        guard let fromIndex = order.firstIndex(of: kind) else { return }
+        guard let fromIndex = order.firstIndex(of: kind), let targetIndex = order.firstIndex(of: target) else { return }
+        let movingDown = fromIndex < targetIndex
+
         order.remove(at: fromIndex)
-        let toIndex = order.firstIndex(of: target) ?? order.count
-        order.insert(kind, at: toIndex)
+        guard let newTargetIndex = order.firstIndex(of: target) else { return }
+        let insertIndex = movingDown ? newTargetIndex + 1 : newTargetIndex
+        order.insert(kind, at: min(insertIndex, order.count))
+
         withAnimation(.easeInOut(duration: 0.2)) {
             settings.dashboardCardOrder = order
         }
