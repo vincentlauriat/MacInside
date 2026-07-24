@@ -78,4 +78,31 @@ final class ProcessMonitor {
         guard length > 0 else { return nil }
         return String(cString: buffer)
     }
+
+    /// Envoie SIGTERM (par défaut) ou SIGKILL (`force`) à un process —
+    /// capacité propre à la distribution Developer ID non-sandboxée de
+    /// MacInside (une variante App Store ne pourrait pas faire ça). Fonctionne
+    /// uniquement sur les process appartenant à l'utilisateur courant :
+    /// comportement standard du noyau (permissions Unix), pas une limitation
+    /// ajoutée ici — l'appel échoue simplement (retourne `false`) sinon.
+    @discardableResult
+    static func terminate(pid: Int32, force: Bool) -> Bool {
+        Darwin.kill(pid, force ? SIGKILL : SIGTERM) == 0
+    }
+
+    /// Diminue la priorité d'ordonnancement (`nice`) d'un process. Action à
+    /// sens unique délibérément : un utilisateur non privilégié peut
+    /// seulement augmenter son propre `nice` (donc baisser sa priorité),
+    /// jamais le redescendre en dessous de sa valeur courante — même pour ses
+    /// propres process (limite POSIX standard, pas une restriction ajoutée
+    /// ici). Pas de fonctionnalité symétrique « augmenter la priorité »
+    /// proposée à l'UI pour cette raison : elle échouerait silencieusement à
+    /// chaque appel, sans utilité réelle pour l'utilisateur.
+    @discardableResult
+    static func lowerPriority(pid: Int32, by delta: Int32 = 5) -> Bool {
+        errno = 0
+        let current = getpriority(PRIO_PROCESS, UInt32(pid))
+        guard errno == 0 else { return false }
+        return setpriority(PRIO_PROCESS, UInt32(pid), current + delta) == 0
+    }
 }

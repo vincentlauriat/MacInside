@@ -910,6 +910,66 @@
           }
         }
       }
+    },
+    "Annuler" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Terminer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit"
+          }
+        }
+      }
+    },
+    "Forcer l'arrêt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Force Quit"
+          }
+        }
+      }
+    },
+    "Baisser la priorité" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lower Priority"
+          }
+        }
+      }
+    },
+    "Terminer « %@ » ?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit “%@”?"
+          }
+        }
+      }
+    },
+    "Forcer l'arrêt de « %@ » ?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Force quit “%@”?"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
