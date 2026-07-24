@@ -9,6 +9,7 @@ struct StorageCardView: View {
             VStack(spacing: 10) {
                 StorageSummaryView(volume: model.disk.systemVolume)
                 ExternalVolumesView(volumes: model.disk.externalVolumes)
+                DiskThroughputView(disk: model.disk)
             }
         }
     }

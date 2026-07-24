@@ -58,12 +58,20 @@ struct VolumeStats: Identifiable, Equatable {
 
     var usedBytes: UInt64 { totalBytes > availableBytes ? totalBytes - availableBytes : 0 }
     var usedPercent: Double { totalBytes == 0 ? 0 : Double(usedBytes) / Double(totalBytes) * 100 }
-    var throughputBytesPerSec: Double = 0
 }
 
 struct DiskStats: Equatable {
     var systemVolume: VolumeStats?
     var externalVolumes: [VolumeStats] = []
+    /// Débit agrégé tous disques confondus : les compteurs IOKit "Statistics"
+    /// vivent sur le pilote physique (`IOBlockStorageDriver`), pas sur les
+    /// volumes/conteneurs APFS montés — pas de ventilation fiable par volume.
+    var readBytesPerSec: Double = 0
+    var writeBytesPerSec: Double = 0
+    var readHistory: [Double] = []
+    var writeHistory: [Double] = []
+    var totalReadBytes: UInt64 = 0
+    var totalWriteBytes: UInt64 = 0
 }
 
 struct NetworkStats: Equatable {
