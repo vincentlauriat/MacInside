@@ -1,5 +1,6 @@
 import SwiftUI
 import Observation
+import ServiceManagement
 
 enum AppearanceMode: String, CaseIterable, Identifiable {
     case system, light, dark
@@ -55,6 +56,9 @@ final class AppSettings {
     var dashboardCardOrderRaw: String {
         didSet { UserDefaults.standard.set(dashboardCardOrderRaw, forKey: "dashboardCardOrder") }
     }
+    var hiddenDashboardCardsRaw: String {
+        didSet { UserDefaults.standard.set(hiddenDashboardCardsRaw, forKey: "hiddenDashboardCards") }
+    }
     var lowBatteryAlertEnabled: Bool {
         didSet { UserDefaults.standard.set(lowBatteryAlertEnabled, forKey: "lowBatteryAlertEnabled") }
     }
@@ -82,6 +86,7 @@ final class AppSettings {
         showBatteryMenuExtra = defaults.object(forKey: "showBatteryMenuExtra") as? Bool ?? false
         showGPUMenuExtra = defaults.object(forKey: "showGPUMenuExtra") as? Bool ?? false
         dashboardCardOrderRaw = defaults.string(forKey: "dashboardCardOrder") ?? ""
+        hiddenDashboardCardsRaw = defaults.string(forKey: "hiddenDashboardCards") ?? ""
 
         lowBatteryAlertEnabled = defaults.object(forKey: "lowBatteryAlertEnabled") as? Bool ?? true
         lowBatteryAlertThreshold = defaults.object(forKey: "lowBatteryAlertThreshold") as? Int ?? 20
@@ -107,5 +112,34 @@ final class AppSettings {
             return order
         }
         set { dashboardCardOrderRaw = newValue.map(\.rawValue).joined(separator: ",") }
+    }
+
+    /// Cartes masquées par l'utilisateur (Réglages → « Cartes du dashboard »),
+    /// indépendamment de leur ordre.
+    var hiddenDashboardCards: Set<DashboardCardKind> {
+        get { Set(hiddenDashboardCardsRaw.split(separator: ",").compactMap { DashboardCardKind(rawValue: String($0)) }) }
+        set { hiddenDashboardCardsRaw = newValue.map(\.rawValue).joined(separator: ",") }
+    }
+
+    /// Démarrage automatique à l'ouverture de session, via `SMAppService`
+    /// (remplaçant moderne de `SMLoginItemSetEnabled`, pas d'entitlement
+    /// supplémentaire requis pour l'app principale). L'état réel (`status`)
+    /// fait foi plutôt qu'un booléen mis en cache dans `UserDefaults` : il ne
+    /// peut pas se désynchroniser de l'état système (ex. si l'utilisateur
+    /// désactive l'élément depuis Réglages Système > Général > Ouverture).
+    var launchAtLogin: Bool {
+        get { SMAppService.mainApp.status == .enabled }
+        set {
+            do {
+                if newValue {
+                    try SMAppService.mainApp.register()
+                } else {
+                    try SMAppService.mainApp.unregister()
+                }
+            } catch {
+                // Best-effort : l'utilisateur peut avoir refusé/révoqué côté
+                // Réglages Système, rien à faire de plus côté app.
+            }
+        }
     }
 }

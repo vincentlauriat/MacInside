@@ -34,7 +34,9 @@ struct DashboardView: View {
     }
 
     private var orderedKinds: [DashboardCardKind] {
-        settings.dashboardCardOrder.filter { $0 != .battery || model.battery.isPresent }
+        settings.dashboardCardOrder
+            .filter { $0 != .battery || model.battery.isPresent }
+            .filter { !settings.hiddenDashboardCards.contains($0) }
     }
 
     @ViewBuilder

@@ -31,6 +31,16 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
+            Section("Démarrage") {
+                Toggle("Démarrer à l'ouverture de session", isOn: $settings.launchAtLogin)
+            }
+
+            Section("Cartes du dashboard") {
+                ForEach(visibleCardKinds) { kind in
+                    Toggle(kind.label, isOn: cardVisibilityBinding(for: kind))
+                }
+            }
+
             Section("Barre de menu") {
                 Picker("Style", selection: $settings.menuBarModeRaw) {
                     ForEach(MenuBarMode.allCases) { mode in
@@ -90,6 +100,25 @@ struct SettingsView: View {
         .frame(width: 420, height: windowHeight)
     }
 
+    /// Cartes proposées dans « Cartes du dashboard » : mêmes règles de
+    /// visibilité conditionnelle que le dashboard lui-même (ex. Batterie
+    /// absente sur un Mac de bureau) — pas de toggle pour une carte qui ne
+    /// s'affichera de toute façon jamais.
+    private var visibleCardKinds: [DashboardCardKind] {
+        settings.dashboardCardOrder.filter { $0 != .battery || model.battery.isPresent }
+    }
+
+    private func cardVisibilityBinding(for kind: DashboardCardKind) -> Binding<Bool> {
+        Binding(
+            get: { !settings.hiddenDashboardCards.contains(kind) },
+            set: { isVisible in
+                var hidden = settings.hiddenDashboardCards
+                if isVisible { hidden.remove(kind) } else { hidden.insert(kind) }
+                settings.hiddenDashboardCards = hidden
+            }
+        )
+    }
+
     private var windowHeight: CGFloat {
         var height: CGFloat = 340
         if settings.menuBarMode == .separate { height += 220 }
@@ -98,6 +127,8 @@ struct SettingsView: View {
             if settings.lowBatteryAlertEnabled { height += 70 }
             if settings.highBatteryAlertEnabled { height += 70 }
         }
+        height += 90 // Section « Démarrage »
+        height += 60 + CGFloat(visibleCardKinds.count) * 34 // Section « Cartes du dashboard »
         return height
     }
 }

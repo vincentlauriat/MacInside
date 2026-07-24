@@ -880,6 +880,36 @@
           }
         }
       }
+    },
+    "Démarrage" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Startup"
+          }
+        }
+      }
+    },
+    "Démarrer à l'ouverture de session" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start at login"
+          }
+        }
+      }
+    },
+    "Cartes du dashboard" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dashboard cards"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
