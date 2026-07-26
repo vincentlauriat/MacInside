@@ -156,33 +156,46 @@
 
   .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease, transform .6s ease}
   .reveal.visible{opacity:1;transform:none}
+
+  .langtog{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:none}
+  .langtog button{background:transparent;border:0;color:var(--muted);font:600 12.5px/1 var(--font-mono);
+    padding:0 10px;min-height:36px;cursor:pointer}
+  .langtog button+button{border-left:1px solid var(--line)}
+  .langtog button:hover{color:var(--txt)}
+  .langtog button.on{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:600px){.langtog button{padding:0 7px;font-size:11.5px}}
 </style>
 </head>
 <body>
-<a class="skip" href="#top">Skip to content</a>
+<a class="skip" href="#top"><span class="en">Skip to content</span><span class="fr">Aller au contenu</span><span class="zh">跳至內容</span></a>
 
 <nav><div class="wrap">
   <a class="brand" href="#top"><img src="icon-512.png" alt=""><span>MacInside</span></a>
   <div class="nav-links">
-    <a class="hide-sm" href="#features">Features</a>
-    <a class="hide-sm" href="#menubar">Menu bar</a>
-    <a class="hide-sm" href="#trust">Under the hood</a>
+    <a class="hide-sm" href="#features"><span class="en">Features</span><span class="fr">Fonctions</span><span class="zh">功能</span></a>
+    <a class="hide-sm" href="#menubar"><span class="en">Menu bar</span><span class="fr">Barre de menus</span><span class="zh">選單列</span></a>
+    <a class="hide-sm" href="#trust"><span class="en">Under the hood</span><span class="fr">Sous le capot</span><span class="zh">底層架構</span></a>
     <div class="sep hide-sm"></div>
     <a href="https://github.com/vincentlauriat/MacInside" target="_blank" rel="noopener">GitHub ↗</a>
-    <a class="btn btn-primary btn-sm" href="https://github.com/vincentlauriat/MacInside/releases/latest" target="_blank" rel="noopener">Download</a>
+    <div class="langtog" role="group" aria-label="Language / Langue / 語言">
+    <button type="button" data-lang="en" class="on" onclick="setLang('en')">EN</button>
+    <button type="button" data-lang="fr" onclick="setLang('fr')">FR</button>
+    <button type="button" data-lang="zh" onclick="setLang('zh')">中文</button>
+  </div>
+    <a class="btn btn-primary btn-sm" href="https://github.com/vincentlauriat/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Download</span><span class="fr">Télécharger</span><span class="zh">下載</span></a>
   </div>
 </div></nav>
 
 <header id="top"><div class="wrap hero-grid">
   <div>
-    <span class="pill"><span class="led"></span>refreshes every 1s · reads AppleSMC directly</span>
-    <h1>The instrument panel<br><span class="grad">macOS forgot to ship.</span></h1>
-    <p class="sub">CPU load, real sensor temperatures, fan RPM, GPU utilization, battery health, network throughput — one native dashboard, from the Dock to the menu bar.</p>
+    <span class="pill"><span class="led"></span><span class="en">refreshes every 1s · reads AppleSMC directly</span><span class="fr">rafraîchi toutes les secondes · lit AppleSMC directement</span><span class="zh">每 1 秒更新 · 直接讀取 AppleSMC</span></span>
+    <h1><span class="en">The instrument panel<br><span class="grad">macOS forgot to ship.</span></span><span class="fr">La planche de bord<br><span class="grad">que macOS a oublié de livrer.</span></span><span class="zh">macOS 忘了附上的<span class="grad">那塊儀表板。</span></span></h1>
+    <p class="sub"><span class="en">CPU load, real sensor temperatures, fan RPM, GPU utilization, battery health, network throughput — one native dashboard, from the Dock to the menu bar.</span><span class="fr">Charge CPU, températures réelles des capteurs, RPM des ventilateurs, utilisation GPU, santé de la batterie, débit réseau — un tableau de bord natif, du Dock à la barre de menus.</span><span class="zh">CPU 負載、真實感測器溫度、風扇轉速、GPU 使用率、電池健康度、網路流量——一個原生儀表板，從 Dock 到選單列。</span></p>
     <div class="cta">
-      <a class="btn btn-primary" href="https://github.com/vincentlauriat/MacInside/releases/latest" target="_blank" rel="noopener">Download for macOS 14+</a>
-      <a class="btn btn-ghost" href="https://github.com/vincentlauriat/MacInside" target="_blank" rel="noopener">View source</a>
+      <a class="btn btn-primary" href="https://github.com/vincentlauriat/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Download for macOS 14+</span><span class="fr">Télécharger pour macOS 14+</span><span class="zh">下載 macOS 14+ 版</span></a>
+      <a class="btn btn-ghost" href="https://github.com/vincentlauriat/MacInside" target="_blank" rel="noopener"><span class="en">View source</span><span class="fr">Voir le code</span><span class="zh">檢視原始碼</span></a>
     </div>
-    <div class="meta"><span><b>100%</b> native Swift</span><span><b>0</b> telemetry</span><span><b>MIT</b> licensed</span><span><b>FR/EN</b> localized</span></div>
+    <div class="meta"><span><b>100%</b> <span class="en">native Swift</span><span class="fr">Swift natif</span><span class="zh">原生 Swift</span></span><span><b>0</b> <span class="en">telemetry</span><span class="fr">télémétrie</span><span class="zh">遙測</span></span><span><b>MIT</b> <span class="en">licensed</span><span class="fr">licence</span><span class="zh">授權</span></span><span><b>FR/EN</b> <span class="en">app localized</span><span class="fr">app localisée</span><span class="zh">應用程式語言</span></span></div>
   </div>
 
   <div class="card-frame" aria-hidden="true">
@@ -199,9 +212,9 @@
           <div class="gauge-center" id="gaugeTotal">0%</div>
         </div>
         <div class="legend">
-          <div class="legend-row"><span class="sw" style="background:var(--orange)"></span><span class="lbl">System</span><span class="val" id="valA">0%</span></div>
-          <div class="legend-row"><span class="sw" style="background:var(--blue)"></span><span class="lbl">User</span><span class="val" id="valB">0%</span></div>
-          <div class="legend-row"><span class="sw" style="background:transparent"></span><span class="lbl">Threads</span><span class="val mono">10</span></div>
+          <div class="legend-row"><span class="sw" style="background:var(--orange)"></span><span class="lbl"><span class="en">System</span><span class="fr">Système</span><span class="zh">系統</span></span><span class="val" id="valA">0%</span></div>
+          <div class="legend-row"><span class="sw" style="background:var(--blue)"></span><span class="lbl"><span class="en">User</span><span class="fr">Utilisateur</span><span class="zh">使用者</span></span><span class="val" id="valB">0%</span></div>
+          <div class="legend-row"><span class="sw" style="background:transparent"></span><span class="lbl"><span class="en">Threads</span><span class="fr">Threads</span><span class="zh">執行緒</span></span><span class="val mono">10</span></div>
         </div>
       </div>
       <div class="core-bars" id="coreBars"></div>
@@ -212,50 +225,50 @@
 <section id="why"><div class="wrap">
   <div class="why-grid">
     <div class="reveal">
-      <p class="eyebrow">Why</p>
-      <h2>Activity Monitor shows you processes. System Settings shows battery health. <b>Neither shows a fan speed or an SMC temperature.</b></h2>
-      <p style="margin-top:22px">MacInside talks straight to <b>host_statistics</b>, IOKit's <b>AppleSMC</b>, <b>IOAccelerator</b> and <b>libproc</b> — the same low-level APIs tools like iStat Menus and Stats use. No shelling out to <span class="mono">top</span> or <span class="mono">iostat</span>, no background daemon, no phoning home.</p>
-      <p>Every reading lands in a single masonry dashboard window, and in a menu bar you shape yourself — one combined dropdown, or six independent icons, each with its own detail view.</p>
+      <p class="eyebrow"><span class="en">Why</span><span class="fr">Pourquoi</span><span class="zh">為什麼</span></p>
+      <h2><span class="en">Activity Monitor shows you processes. System Settings shows battery health. <b>Neither shows a fan speed or an SMC temperature.</b></span><span class="fr">Le Moniteur d'activité montre les processus. Les Réglages Système montrent la santé de la batterie. <b>Ni l'un ni l'autre ne montre une vitesse de ventilateur ou une température SMC.</b></span><span class="zh">活動監視器給你行程，系統設定給你電池健康度。<b>兩者都不會告訴你風扇轉速或 SMC 溫度。</b></span></h2>
+      <p style="margin-top:22px"><span class="en">MacInside talks straight to <b>host_statistics</b>, IOKit's <b>AppleSMC</b>, <b>IOAccelerator</b> and <b>libproc</b> — the same low-level APIs tools like iStat Menus and Stats use. No shelling out to <span class="mono">top</span> or <span class="mono">iostat</span>, no background daemon, no phoning home.</span><span class="fr">MacInside s'adresse directement à <b>host_statistics</b>, à l'<b>AppleSMC</b> d'IOKit, à <b>IOAccelerator</b> et à <b>libproc</b> — les mêmes API bas niveau qu'utilisent iStat Menus ou Stats. Aucun appel à <span class="mono">top</span> ou <span class="mono">iostat</span>, aucun démon en arrière-plan, aucune remontée de données.</span><span class="zh">MacInside 直接與 <b>host_statistics</b>、IOKit 的 <b>AppleSMC</b>、<b>IOAccelerator</b> 與 <b>libproc</b> 溝通——就是 iStat Menus、Stats 這類工具所用的同一批低階 API。不呼叫 <span class="mono">top</span> 或 <span class="mono">iostat</span>，沒有背景常駐程式，也不回傳任何資料。</span></p>
+      <p><span class="en">Every reading lands in a single masonry dashboard window, and in a menu bar you shape yourself — one combined dropdown, or six independent icons, each with its own detail view.</span><span class="fr">Chaque relevé arrive dans une seule fenêtre en maçonnerie, et dans une barre de menus que vous façonnez — un menu combiné, ou six icônes indépendantes, chacune avec sa vue détaillée.</span><span class="zh">每一項讀數都落在同一個磚砌式儀表板視窗中，以及一條你自己決定形狀的選單列——一個合併下拉選單，或六個各自獨立、各有詳細檢視的圖示。</span></p>
     </div>
     <div class="fact-list reveal">
-      <div class="fact"><span class="k">Refresh interval</span><span class="v">0.5s – 5s, adjustable</span></div>
-      <div class="fact"><span class="k">Data source</span><span class="v">IOKit / host_statistics / libproc</span></div>
-      <div class="fact"><span class="k">Network calls</span><span class="v">none, except optional public-IP lookup</span></div>
-      <div class="fact"><span class="k">Sandbox</span><span class="v">disabled (SMC + process access)</span></div>
-      <div class="fact"><span class="k">Distribution</span><span class="v">Developer ID, notarized, stapled</span></div>
-      <div class="fact"><span class="k">License</span><span class="v">MIT, source on GitHub</span></div>
+      <div class="fact"><span class="k"><span class="en">Refresh interval</span><span class="fr">Intervalle de rafraîchissement</span><span class="zh">更新間隔</span></span><span class="v"><span class="en">0.5s – 5s, adjustable</span><span class="fr">0,5 s – 5 s, réglable</span><span class="zh">0.5 秒 – 5 秒，可調整</span></span></div>
+      <div class="fact"><span class="k"><span class="en">Data source</span><span class="fr">Source des données</span><span class="zh">資料來源</span></span><span class="v">IOKit / host_statistics / libproc</span></div>
+      <div class="fact"><span class="k"><span class="en">Network calls</span><span class="fr">Appels réseau</span><span class="zh">網路連線</span></span><span class="v"><span class="en">none, except optional public-IP lookup</span><span class="fr">aucun, hormis la recherche optionnelle d'IP publique</span><span class="zh">無，除了選用的公用 IP 查詢</span></span></div>
+      <div class="fact"><span class="k"><span class="en">Sandbox</span><span class="fr">Sandbox</span><span class="zh">沙箱</span></span><span class="v"><span class="en">disabled (SMC + process access)</span><span class="fr">désactivé (accès SMC et processus)</span><span class="zh">已停用（需存取 SMC 與行程）</span></span></div>
+      <div class="fact"><span class="k"><span class="en">Distribution</span><span class="fr">Distribution</span><span class="zh">發布方式</span></span><span class="v"><span class="en">Developer ID, notarized, stapled</span><span class="fr">Developer ID, notarié, stapled</span><span class="zh">Developer ID、已公證、已裝訂</span></span></div>
+      <div class="fact"><span class="k"><span class="en">License</span><span class="fr">Licence</span><span class="zh">授權</span></span><span class="v"><span class="en">MIT, source on GitHub</span><span class="fr">MIT, code sur GitHub</span><span class="zh">MIT，原始碼在 GitHub</span></span></div>
     </div>
   </div>
 </div></section>
 
 <section id="features"><div class="wrap">
-  <p class="eyebrow reveal">What it reads</p>
-  <h2 class="reveal">Eight cards, one machine.</h2>
+  <p class="eyebrow reveal"><span class="en">What it reads</span><span class="fr">Ce qu'il lit</span><span class="zh">它讀些什麼</span></p>
+  <h2 class="reveal"><span class="en">Eight cards, one machine.</span><span class="fr">Huit cartes, une machine.</span><span class="zh">八張卡片，一台機器。</span></h2>
   <div class="feat-grid reveal">
-    <div class="feat"><div class="fi" style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">host_processor_info</p><h3>CPU</h3><p>System vs. user load, per-core performance/efficiency bars, and the process actually spending your cycles.</p></div>
-    <div class="feat"><div class="fi" style="color:var(--blue)"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 4v16M4 9h5M4 15h5" stroke="currentColor" stroke-width="1.6"/></svg></div><p class="feyebrow">vm_statistics64</p><h3>Memory</h3><p>Wired, active, compressed, available — plus the top memory consumer, updated every second.</p></div>
-    <div class="feat"><div class="fi" style="color:var(--purple)"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6"/></svg></div><p class="feyebrow">FileManager / statfs</p><h3>Storage</h3><p>System volume and every external volume, used and free, at a glance.</p></div>
-    <div class="feat"><div class="fi" style="color:var(--teal)"><svg viewBox="0 0 24 24" fill="none"><path d="M4 17l4-8 4 5 3-4 5 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><p class="feyebrow">getifaddrs</p><h3>Network</h3><p>Local and public IP, gateway, subnet, MAC address, and live download/upload sparklines.</p></div>
-    <div class="feat"><div class="fi" style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v6M12 16v6M4.9 4.9l4.2 4.2M14.9 14.9l4.2 4.2M2 12h6M16 12h6M4.9 19.1l4.2-4.2M14.9 9.1l4.2-4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOKit · AppleSMC</p><h3>Sensors</h3><p>Real SMC temperature &amp; fan readings — Intel and Apple Silicon — with an honest "no fan on this Mac" for fanless models.</p></div>
-    <div class="feat"><div class="fi" style="color:var(--mint)"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div><p class="feyebrow">IOKit · AppleSMC</p><h3>Power</h3><p>Voltage, current and wattage on DC In, system and battery rails, where the hardware exposes them.</p></div>
-    <div class="feat"><div class="fi" style="color:var(--blue)"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 20h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOAccelerator</p><h3>GPU</h3><p>Device, renderer and tiler utilization straight from IOAccelerator — no Console.app required.</p></div>
-    <div class="feat"><div class="fi" style="color:var(--mint)"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="17" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M22 10.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOPowerSources</p><h3>Battery</h3><p>Charge, time remaining, health and cycle count — hidden automatically if your Mac doesn't have one.</p></div>
+    <div class="feat"><div class="fi" style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">host_processor_info</p><h3>CPU</h3><p><span class="en">System vs. user load, per-core performance/efficiency bars, and the process actually spending your cycles.</span><span class="fr">Charge système contre charge utilisateur, barres performance/efficacité par cœur, et le processus qui consomme réellement vos cycles.</span><span class="zh">系統與使用者負載的對比、每個效能／節能核心的長條圖，以及真正在消耗你運算週期的行程。</span></p></div>
+    <div class="feat"><div class="fi" style="color:var(--blue)"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 4v16M4 9h5M4 15h5" stroke="currentColor" stroke-width="1.6"/></svg></div><p class="feyebrow">vm_statistics64</p><h3><span class="en">Memory</span><span class="fr">Mémoire</span><span class="zh">記憶體</span></h3><p><span class="en">Wired, active, compressed, available — plus the top memory consumer, updated every second.</span><span class="fr">Résidente, active, compressée, disponible — plus le plus gros consommateur, mis à jour chaque seconde.</span><span class="zh">常駐、使用中、已壓縮、可用——外加最耗記憶體的行程，每秒更新。</span></p></div>
+    <div class="feat"><div class="fi" style="color:var(--purple)"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6"/></svg></div><p class="feyebrow">FileManager / statfs</p><h3><span class="en">Storage</span><span class="fr">Stockage</span><span class="zh">儲存空間</span></h3><p><span class="en">System volume and every external volume, used and free, at a glance.</span><span class="fr">Volume système et chaque volume externe, utilisé et libre, d'un coup d'œil.</span><span class="zh">系統卷宗與每個外接卷宗的已用與可用空間，一眼看完。</span></p></div>
+    <div class="feat"><div class="fi" style="color:var(--teal)"><svg viewBox="0 0 24 24" fill="none"><path d="M4 17l4-8 4 5 3-4 5 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><p class="feyebrow">getifaddrs</p><h3><span class="en">Network</span><span class="fr">Réseau</span><span class="zh">網路</span></h3><p><span class="en">Local and public IP, gateway, subnet, MAC address, and live download/upload sparklines.</span><span class="fr">IP locale et publique, passerelle, sous-réseau, adresse MAC, et sparklines de débit en direct.</span><span class="zh">本機與公用 IP、閘道、子網路、MAC 位址，以及即時上下行走勢圖。</span></p></div>
+    <div class="feat"><div class="fi" style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v6M12 16v6M4.9 4.9l4.2 4.2M14.9 14.9l4.2 4.2M2 12h6M16 12h6M4.9 19.1l4.2-4.2M14.9 9.1l4.2-4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOKit · AppleSMC</p><h3><span class="en">Sensors</span><span class="fr">Capteurs</span><span class="zh">感測器</span></h3><p><span class="en">Real SMC temperature &amp; fan readings — Intel and Apple Silicon — with an honest "no fan on this Mac" for fanless models.</span><span class="fr">Relevés SMC réels de température et de ventilateurs — Intel et Apple Silicon — avec un honnête « pas de ventilateur sur ce Mac » pour les modèles fanless.</span><span class="zh">真實的 SMC 溫度與風扇讀數——Intel 與 Apple Silicon 皆支援——無風扇機型則老實顯示「這台 Mac 沒有風扇」。</span></p></div>
+    <div class="feat"><div class="fi" style="color:var(--mint)"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div><p class="feyebrow">IOKit · AppleSMC</p><h3><span class="en">Power</span><span class="fr">Alimentation</span><span class="zh">電力</span></h3><p><span class="en">Voltage, current and wattage on DC In, system and battery rails, where the hardware exposes them.</span><span class="fr">Tension, courant et puissance sur les rails DC In, système et batterie, là où le matériel les expose.</span><span class="zh">在硬體有提供的情況下，顯示 DC In、系統與電池電路的電壓、電流與瓦數。</span></p></div>
+    <div class="feat"><div class="fi" style="color:var(--blue)"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 20h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOAccelerator</p><h3>GPU</h3><p><span class="en">Device, renderer and tiler utilization straight from IOAccelerator — no Console.app required.</span><span class="fr">Utilisation device, renderer et tiler directement depuis IOAccelerator — sans passer par Console.app.</span><span class="zh">直接從 IOAccelerator 取得 device、renderer 與 tiler 的使用率——不需要開 Console.app。</span></p></div>
+    <div class="feat"><div class="fi" style="color:var(--mint)"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="17" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M22 10.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOPowerSources</p><h3><span class="en">Battery</span><span class="fr">Batterie</span><span class="zh">電池</span></h3><p><span class="en">Charge, time remaining, health and cycle count — hidden automatically if your Mac doesn't have one.</span><span class="fr">Charge, autonomie restante, santé et nombre de cycles — masqué automatiquement si votre Mac n'en a pas.</span><span class="zh">電量、剩餘時間、健康度與循環次數——若你的 Mac 沒有電池則自動隱藏。</span></p></div>
   </div>
 </div></section>
 
 <section id="dashboard"><div class="wrap">
-  <p class="eyebrow reveal">The dashboard</p>
-  <h2 class="reveal">Every card, one window, no scrolling to find what broke.</h2>
-  <p class="lede reveal">A masonry layout that adapts to your window width — drag any card to reorder it, the layout is remembered next time you launch.</p>
+  <p class="eyebrow reveal"><span class="en">The dashboard</span><span class="fr">Le tableau de bord</span><span class="zh">儀表板</span></p>
+  <h2 class="reveal"><span class="en">Every card, one window, no scrolling to find what broke.</span><span class="fr">Toutes les cartes, une fenêtre, sans faire défiler pour trouver ce qui cloche.</span><span class="zh">所有卡片集中在一個視窗，不必捲動就能找到出問題的地方。</span></h2>
+  <p class="lede reveal"><span class="en">A masonry layout that adapts to your window width — drag any card to reorder it, the layout is remembered next time you launch.</span><span class="fr">Une mise en page en maçonnerie qui s'adapte à la largeur de la fenêtre — glissez une carte pour la réordonner, la disposition est retenue au prochain lancement.</span><span class="zh">磚砌式版面會依視窗寬度自動調整——拖曳任一張卡片即可重新排序，下次啟動時會記住這個版面。</span></p>
   <div class="shot-frame reveal"><img src="screenshots/dashboard.png" alt="MacInside dashboard window showing CPU, memory, storage, network, sensors, power, battery and network identity cards" loading="lazy"></div>
 </div></section>
 
 <section id="menubar"><div class="wrap">
   <div class="split">
     <div class="reveal">
-      <p class="eyebrow">Menu bar</p>
-      <h2>Lives in your menu bar, however much room you give it.</h2>
-      <p class="lede">One combined dropdown for a quick glance, or six independent icons — CPU, Memory, Network, Disk, Battery, GPU — each opening its own detailed view. Toggle per metric from Settings.</p>
+      <p class="eyebrow"><span class="en">Menu bar</span><span class="fr">Barre de menus</span><span class="zh">選單列</span></p>
+      <h2><span class="en">Lives in your menu bar, however much room you give it.</span><span class="fr">Vit dans votre barre de menus, quelle que soit la place que vous lui laissez.</span><span class="zh">住在你的選單列裡，不管你留給它多少空間。</span></h2>
+      <p class="lede"><span class="en">One combined dropdown for a quick glance, or six independent icons — CPU, Memory, Network, Disk, Battery, GPU — each opening its own detailed view. Toggle per metric from Settings.</span><span class="fr">Un menu combiné pour un coup d'œil rapide, ou six icônes indépendantes — CPU, Mémoire, Réseau, Disque, Batterie, GPU — chacune ouvrant sa vue détaillée. Activable métrique par métrique dans les Réglages.</span><span class="zh">想快速一瞥就用一個合併下拉選單，或改用六個獨立圖示——CPU、記憶體、網路、磁碟、電池、GPU——每個都能開啟自己的詳細檢視。可在設定中逐項開關。</span></p>
       <div class="menubar-demo">
         <span class="mb-pill"><span class="sw" style="background:var(--orange)"></span>CPU 34%</span>
         <span class="mb-pill"><span class="sw" style="background:var(--blue)"></span>MEM 71%</span>
@@ -270,13 +283,13 @@
 </div></section>
 
 <section id="trust"><div class="wrap">
-  <p class="eyebrow reveal">Under the hood</p>
-  <h2 class="reveal">Built the way a system tool should be.</h2>
+  <p class="eyebrow reveal"><span class="en">Under the hood</span><span class="fr">Sous le capot</span><span class="zh">底層架構</span></p>
+  <h2 class="reveal"><span class="en">Built the way a system tool should be.</span><span class="fr">Construit comme un outil système devrait l'être.</span><span class="zh">以系統工具該有的方式打造。</span></h2>
   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px 40px;margin-top:36px" class="reveal">
-    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><b style="color:var(--txt);font-weight:650">Signed &amp; notarized.</b> Developer ID + Hardened Runtime, stapled by Apple — launches without a Gatekeeper warning, even offline.</span></div>
-    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><b style="color:var(--txt);font-weight:650">Self-updating.</b> Sparkle checks in the background and asks before it ever downloads or installs anything.</span></div>
-    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><b style="color:var(--txt);font-weight:650">Speaks your language.</b> Follows the system language automatically — French or English today.</span></div>
-    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><b style="color:var(--txt);font-weight:650">Open source.</b> MIT licensed — read every line, or build it yourself with XcodeGen.</span></div>
+    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><span class="en"><b style="color:var(--txt);font-weight:650">Signed &amp; notarized.</b> Developer ID + Hardened Runtime, stapled by Apple — launches without a Gatekeeper warning, even offline.</span><span class="fr"><b style="color:var(--txt);font-weight:650">Signée et notariée.</b> Developer ID + Hardened Runtime, stapled par Apple — se lance sans avertissement Gatekeeper, même hors ligne.</span><span class="zh"><b style="color:var(--txt);font-weight:650">已簽章與公證。</b>Developer ID + Hardened Runtime，並由 Apple 裝訂——即使離線也不會出現 Gatekeeper 警告。</span></span></div>
+    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><span class="en"><b style="color:var(--txt);font-weight:650">Self-updating.</b> Sparkle checks in the background and asks before it ever downloads or installs anything.</span><span class="fr"><b style="color:var(--txt);font-weight:650">Auto-mise à jour.</b> Sparkle vérifie en arrière-plan et demande toujours avant de télécharger ou d'installer quoi que ce soit.</span><span class="zh"><b style="color:var(--txt);font-weight:650">自動更新。</b>Sparkle 會在背景檢查，並且在下載或安裝任何東西之前都會先詢問你。</span></span></div>
+    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><span class="en"><b style="color:var(--txt);font-weight:650">Speaks your language.</b> Follows the system language automatically — French or English today.</span><span class="fr"><b style="color:var(--txt);font-weight:650">Parle votre langue.</b> Suit automatiquement la langue du système — français ou anglais aujourd'hui.</span><span class="zh"><b style="color:var(--txt);font-weight:650">說你的語言。</b>自動跟隨系統語言——目前支援法文與英文。</span></span></div>
+    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><span class="en"><b style="color:var(--txt);font-weight:650">Open source.</b> MIT licensed — read every line, or build it yourself with XcodeGen.</span><span class="fr"><b style="color:var(--txt);font-weight:650">Open source.</b> Sous licence MIT — lisez chaque ligne, ou compilez-la vous-même avec XcodeGen.</span><span class="zh"><b style="color:var(--txt);font-weight:650">開源。</b>採 MIT 授權——你可以讀每一行程式碼，也可以自己用 XcodeGen 建置。</span></span></div>
   </div>
 </div></section>
 
@@ -285,13 +298,13 @@
     <a class="brand" href="#top"><img src="icon-512.png" alt=""><span>MacInside</span></a>
     <div class="foot-links">
       <a href="https://github.com/vincentlauriat/MacInside" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://github.com/vincentlauriat/MacInside/releases/latest" target="_blank" rel="noopener">Releases</a>
-      <a href="https://github.com/vincentlauriat/MacInside/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+      <a href="https://github.com/vincentlauriat/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Releases</span><span class="fr">Versions</span><span class="zh">發行版</span></a>
+      <a href="https://github.com/vincentlauriat/MacInside/blob/main/LICENSE" target="_blank" rel="noopener"><span class="en">MIT License</span><span class="fr">Licence MIT</span><span class="zh">MIT 授權</span></a>
       <a href="https://lauriat.fr" target="_blank" rel="noopener">lauriat.fr</a>
-      <a href="https://vincentlauriat.github.io" target="_blank" rel="noopener">More apps</a>
+      <a href="https://vincentlauriat.github.io" target="_blank" rel="noopener"><span class="en">More apps</span><span class="fr">Autres apps</span><span class="zh">其他應用程式</span></a>
     </div>
   </div>
-  <p class="foot-note">Built by Vincent Lauriat · one of several free, open-source macOS apps</p>
+  <p class="foot-note"><span class="en">Built by Vincent Lauriat · one of several free, open-source macOS apps</span><span class="fr">Réalisé par Vincent Lauriat · l'une de plusieurs apps macOS libres et open source</span><span class="zh">由 Vincent Lauriat 製作 · 多款免費開源 macOS 應用程式之一</span></p>
 </div></footer>
 
 <script>
@@ -341,5 +354,33 @@
   })();
 </script>
 
+<script>
+  /* zh-Hant et non zh : sur un système configuré en chinois simplifié, un
+     simple `zh` laisse le navigateur choisir une fonte Han simplifiée, qui
+     rend certains caractères traditionnels dans la mauvaise forme. */
+  var LANG_TAG={en:'en',fr:'fr',zh:'zh-Hant'};
+  function setLang(l){
+    if(!LANG_TAG[l]) l='en';
+    document.body.classList.remove('lang-en','lang-fr','lang-zh');
+    document.body.classList.add('lang-'+l);
+    document.documentElement.lang=LANG_TAG[l];
+    /* On boucle sur les boutons au lieu de les nommer un par un : ajouter une
+       4e langue ne demandera alors aucune retouche de ce script. */
+    document.querySelectorAll('.langtog button').forEach(function(b){
+      var on=b.dataset.lang===l;
+      b.classList.toggle('on',on);
+      b.setAttribute('aria-pressed',on?'true':'false');
+    });
+    try{localStorage.setItem('vl-lang',l)}catch(e){}
+  }
+  (function(){
+    var saved;try{saved=localStorage.getItem('vl-lang')}catch(e){}
+    var n=(navigator.language||'en').slice(0,2).toLowerCase();
+    /* Le traditionnel est servi a tout visiteur sinophone, y compris zh-CN :
+       c'est la seule variante chinoise disponible, et la renvoyer vaut mieux
+       que de rabattre ce visiteur sur l'anglais. */
+    setLang(saved||(n==='zh'?'zh':(n==='fr'?'fr':'en')));
+  })();
+</script>
 </body>
 </html>
