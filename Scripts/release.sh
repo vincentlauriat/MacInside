@@ -79,10 +79,16 @@ STAGING="$STAGING_DIR/$APP_NAME.app"
 ditto --norsrc --noextattr --noacl "$APP" "$STAGING"
 
 # 4. Codesign the app with Hardened Runtime + secure timestamp (retry: Apple TS is flaky)
+# $2 (optionnel) : fichier d'entitlements. Indispensable depuis l'ajout des
+# widgets — l'App Group partagé app ↔ extension ne vit que dans les entitlements,
+# et ce script re-signe à la main (le build tourne en CODE_SIGNING_ALLOWED=NO,
+# donc ce que xcodebuild aurait appliqué est écrasé ici).
 codesign_ts() {
-  local target="$1" i
+  local target="$1" entitlements="${2:-}" i
+  local args=(--force --options runtime --timestamp --sign "$SIGNING_IDENTITY")
+  [ -n "$entitlements" ] && args+=(--entitlements "$entitlements")
   for i in 1 2 3 4 5; do
-    if codesign --force --options runtime --timestamp --sign "$SIGNING_IDENTITY" "$target"; then
+    if codesign "${args[@]}" "$target"; then
       return 0
     fi
     echo "  …codesign retry $i/5 (timestamp server) in 5s" >&2
@@ -102,8 +108,21 @@ if [ -d "$SPARKLE_FW" ]; then
   codesign_ts "$SPARKLE_FW"
 fi
 
+# Les extensions (.appex) se signent AVANT l'app qui les contient : signer l'app
+# d'abord scellerait un contenu qui change encore ensuite, et la notarisation
+# rejetterait le paquet. Chaque .appex a ses propres entitlements (sandbox +
+# App Group), distincts de ceux de l'app (non sandboxée).
+if [ -d "$STAGING/Contents/PlugIns" ]; then
+  for appex in "$STAGING/Contents/PlugIns/"*.appex; do
+    [ -e "$appex" ] || continue
+    name="$(basename "$appex" .appex)"
+    echo "▶︎ codesign $name.appex"
+    codesign_ts "$appex" "$ROOT/$name/$name.entitlements"
+  done
+fi
+
 echo "▶︎ codesign (Developer ID, Hardened Runtime)"
-codesign_ts "$STAGING"
+codesign_ts "$STAGING" "$ROOT/$APP_NAME/$APP_NAME.entitlements"
 codesign --verify --strict --deep --verbose=1 "$STAGING"
 
 # 5. Build the DMG with a custom Finder layout

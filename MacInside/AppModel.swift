@@ -28,6 +28,7 @@ final class AppModel {
     private let accessoryBatteryMonitor = AccessoryBatteryMonitor()
     private let processMonitor = ProcessMonitor()
     private let publicAddressLookup = PublicAddressLookup()
+    private let widgetPublisher = WidgetSnapshotPublisher()
 
     private var refreshTask: Task<Void, Never>?
     private let settings: AppSettings
@@ -74,6 +75,10 @@ final class AppModel {
         batteryAlertMonitor.evaluate(battery: battery, settings: settings)
         gpu = gpuMonitor.snapshot()
         accessoryBatteries = accessoryBatteryMonitor.snapshot()
+
+        // Après l'affectation de tous les snapshots : les widgets lisent un
+        // instantané cohérent, jamais un mélange de deux tours de boucle.
+        widgetPublisher.publish(from: self)
 
         Task { [weak self] in
             guard let self, let result = await self.publicAddressLookup.current() else { return }

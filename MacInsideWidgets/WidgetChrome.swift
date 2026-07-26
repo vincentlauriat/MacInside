@@ -1,0 +1,121 @@
+import SwiftUI
+import WidgetKit
+
+/// Éléments visuels communs aux quatre widgets : en-tête, jauge, sparkline,
+/// horodatage, état vide. Volontairement plus sobres que les cartes du
+/// dashboard — un widget est lu d'un coup d'œil, à petite taille.
+struct WidgetHeader: View {
+    let title: LocalizedStringKey
+    let systemImage: String
+
+    var body: some View {
+        HStack(spacing: 5) {
+            Image(systemName: systemImage)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Text(title)
+                .font(.caption2.weight(.medium))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+    }
+}
+
+/// Grande valeur en tête de widget.
+struct WidgetValue: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.system(.title, design: .rounded).weight(.semibold))
+            .monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+    }
+}
+
+/// Sparkline minimaliste, sans axes ni légende : à cette taille, seule la forme
+/// de la courbe porte de l'information.
+struct WidgetSparkline: View {
+    let values: [Double]
+    let color: Color
+
+    var body: some View {
+        GeometryReader { geo in
+            let points = normalized()
+            if points.count > 1 {
+                ZStack {
+                    line(points, in: geo.size)
+                        .stroke(color, style: StrokeStyle(lineWidth: 1.5, lineJoin: .round))
+                    line(points, in: geo.size, closed: true)
+                        .fill(color.opacity(0.15))
+                }
+            }
+        }
+    }
+
+    /// Ramène les valeurs dans [0, 1]. Une série plate (min == max) est centrée
+    /// plutôt que collée en bas, sinon une charge stable ressemble à une panne
+    /// de mesure.
+    private func normalized() -> [Double] {
+        guard let min = values.min(), let max = values.max() else { return [] }
+        guard max > min else { return values.map { _ in 0.5 } }
+        return values.map { ($0 - min) / (max - min) }
+    }
+
+    private func line(_ points: [Double], in size: CGSize, closed: Bool = false) -> Path {
+        Path { path in
+            let step = size.width / CGFloat(points.count - 1)
+            for (index, value) in points.enumerated() {
+                let point = CGPoint(x: CGFloat(index) * step,
+                                    y: size.height * (1 - CGFloat(value)))
+                index == 0 ? path.move(to: point) : path.addLine(to: point)
+            }
+            if closed {
+                path.addLine(to: CGPoint(x: size.width, y: size.height))
+                path.addLine(to: CGPoint(x: 0, y: size.height))
+                path.closeSubpath()
+            }
+        }
+    }
+}
+
+/// Âge de la donnée. Affiché sur tous les widgets à dessein : les données
+/// WidgetKit ont plusieurs minutes de retard par construction (l'extension est
+/// sandboxée et ne peut pas lire les capteurs elle-même), autant que ce soit
+/// lisible plutôt que de laisser croire à du temps réel.
+struct WidgetTimestamp: View {
+    let date: Date
+
+    var body: some View {
+        Text(date, style: .relative)
+            .font(.system(size: 9))
+            .foregroundStyle(.tertiary)
+            .lineLimit(1)
+    }
+}
+
+/// Affiché quand l'app n'a encore jamais publié d'instantané.
+struct WidgetUnavailable: View {
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: "questionmark.circle")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+            Text("Lancez MacInside")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+extension View {
+    /// Fond de widget requis depuis macOS 14 : sans lui, le système journalise
+    /// un avertissement et le rendu est incohérent selon l'emplacement.
+    func widgetChrome() -> some View {
+        frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .containerBackground(.fill.tertiary, for: .widget)
+    }
+}

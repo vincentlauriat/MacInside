@@ -2,11 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!-- Contrairement à l'app, l'extension EST sandboxée : macOS l'impose pour
+         toute app extension. C'est la raison d'être du conteneur partagé —
+         le widget ne peut pas lire le SMC lui-même. -->
     <key>com.apple.security.app-sandbox</key>
-    <false/>
-    <!-- Conteneur partagé avec l'extension widget (elle, obligatoirement
-         sandboxée) : l'app y écrit un instantané des métriques, le widget le
-         relit. Le préfixe Team ID est requis par macOS. -->
+    <true/>
     <key>com.apple.security.application-groups</key>
     <array>
         <string>KFLACS69T9.fr.vincentlauriat.macinside</string>
