@@ -15,6 +15,13 @@ settings:
   base:
     DEVELOPMENT_TEAM: "KFLACS69T9"
     ENABLE_HARDENED_RUNTIME: YES
+    # Version partagée par l'app et l'extension widget : macOS attend qu'une
+    # extension embarquée porte la même version que son app hôte. Définie ici
+    # plutôt que dans chaque target, sinon un bump manuel de l'app seule les
+    # désynchronise. (`release.sh` les surcharge de toute façon en ligne de
+    # commande, ce qui s'applique à tous les targets.)
+    MARKETING_VERSION: "1.1.0"
+    CURRENT_PROJECT_VERSION: "1"
 
 schemes:
   MacInside:
@@ -51,8 +58,6 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: fr.vincentlauriat.macinside
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_VERSION: "5.9"
-        MARKETING_VERSION: "1.1.0"
-        CURRENT_PROJECT_VERSION: "1"
         MACOSX_DEPLOYMENT_TARGET: "14.0"
         CODE_SIGN_ENTITLEMENTS: MacInside/MacInside.entitlements
         CODE_SIGN_IDENTITY: "Developer ID Application"
@@ -100,8 +105,6 @@ targets:
         PRODUCT_NAME: MacInsideWidgets
         PRODUCT_BUNDLE_IDENTIFIER: fr.vincentlauriat.macinside.widgets
         SWIFT_VERSION: "5.9"
-        MARKETING_VERSION: "1.1.0"
-        CURRENT_PROJECT_VERSION: "1"
         MACOSX_DEPLOYMENT_TARGET: "14.0"
         CODE_SIGN_ENTITLEMENTS: MacInsideWidgets/MacInsideWidgets.entitlements
         CODE_SIGN_IDENTITY: "Developer ID Application"
