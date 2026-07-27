@@ -37,7 +37,7 @@ struct BatteryWidgetView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             } else {
-                WidgetUnavailable()
+                WidgetUnavailable(reason: entry.result)
             }
         }
         .widgetChrome()

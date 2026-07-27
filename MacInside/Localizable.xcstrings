@@ -791,6 +791,16 @@
         }
       }
     },
+    "Réinstallez MacInside": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reinstall MacInside"
+          }
+        }
+      }
+    },
     "Réseau": {
       "localizations": {
         "en": {

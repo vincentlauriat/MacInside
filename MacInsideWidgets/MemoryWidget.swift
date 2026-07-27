@@ -22,7 +22,7 @@ struct MemoryWidgetView: View {
             if let snapshot = entry.snapshot {
                 content(snapshot)
             } else {
-                WidgetUnavailable()
+                WidgetUnavailable(reason: entry.result)
             }
         }
         .widgetChrome()

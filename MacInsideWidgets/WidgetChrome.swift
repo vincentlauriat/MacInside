@@ -95,19 +95,37 @@ struct WidgetTimestamp: View {
     }
 }
 
-/// Affiché quand l'app n'a encore jamais publié d'instantané.
+/// Affiché faute de données, avec la raison — les deux causes n'appellent pas
+/// du tout le même geste, les confondre laisse l'utilisateur sans piste.
 struct WidgetUnavailable: View {
+    let reason: WidgetSnapshotStore.ReadResult
+
     var body: some View {
         VStack(spacing: 4) {
-            Image(systemName: "questionmark.circle")
+            Image(systemName: symbol)
                 .font(.title3)
                 .foregroundStyle(.secondary)
-            Text("Lancez MacInside")
+            Text(message)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, 4)
+    }
+
+    private var symbol: String {
+        if case .containerUnavailable = reason { return "exclamationmark.triangle" }
+        return "questionmark.circle"
+    }
+
+    private var message: LocalizedStringKey {
+        if case .containerUnavailable = reason {
+            // Cas d'une app mal signée : réinstaller depuis le DMG officiel est
+            // le seul geste utile, relancer l'app n'y changerait rien.
+            return "Réinstallez MacInside"
+        }
+        return "Lancez MacInside"
     }
 }
 

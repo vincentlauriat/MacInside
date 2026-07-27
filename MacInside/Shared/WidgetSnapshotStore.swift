@@ -49,11 +49,28 @@ enum WidgetSnapshotStore {
         }
     }
 
-    /// Relit l'instantané, ou `nil` si l'app ne l'a encore jamais écrit (widget
-    /// ajouté avant le premier lancement, par exemple) — cas que les widgets
-    /// doivent afficher explicitement plutôt que de montrer des zéros.
-    static func read() -> WidgetSnapshot? {
-        guard let fileURL, let data = try? Data(contentsOf: fileURL) else { return nil }
-        return try? decoder.decode(WidgetSnapshot.self, from: data)
+    /// Résultat d'une lecture. Trois cas volontairement distincts : ils ont des
+    /// causes sans rapport, et les confondre rend le diagnostic impossible —
+    /// un widget qui affiche « Lancez MacInside » alors que l'app tourne
+    /// n'oriente vers rien.
+    enum ReadResult: Equatable {
+        case available(WidgetSnapshot)
+        /// Conteneur accessible, mais l'app n'a encore jamais publié.
+        case notYetPublished
+        /// Conteneur inaccessible : entitlement App Group absent des binaires,
+        /// typiquement un build non signé (`CODE_SIGNING_ALLOWED=NO`) ou une
+        /// signature faite sans `--entitlements`.
+        case containerUnavailable
+    }
+
+    static func read() -> ReadResult {
+        guard let fileURL else { return .containerUnavailable }
+        guard let data = try? Data(contentsOf: fileURL) else { return .notYetPublished }
+        guard let snapshot = try? decoder.decode(WidgetSnapshot.self, from: data) else {
+            // Fichier présent mais illisible : même remède que s'il manquait
+            // (l'app le réécrira au prochain tick), inutile d'un 4ᵉ cas.
+            return .notYetPublished
+        }
+        return .available(snapshot)
     }
 }

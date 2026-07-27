@@ -1,11 +1,16 @@
 import WidgetKit
 import SwiftUI
 
-/// Entrée de timeline : soit un instantané écrit par l'app, soit `nil` quand
-/// l'app n'a encore rien publié (widget ajouté avant le premier lancement).
+/// Entrée de timeline : l'instantané publié par l'app, ou la raison précise de
+/// son absence.
 struct SnapshotEntry: TimelineEntry {
     let date: Date
-    let snapshot: WidgetSnapshot?
+    let result: WidgetSnapshotStore.ReadResult
+
+    var snapshot: WidgetSnapshot? {
+        if case .available(let snapshot) = result { return snapshot }
+        return nil
+    }
 }
 
 /// Fournisseur commun aux quatre widgets : ils affichent tous des facettes du
@@ -17,19 +22,27 @@ struct SnapshotProvider: TimelineProvider {
     private static let refreshInterval: TimeInterval = 5 * 60
 
     func placeholder(in context: Context) -> SnapshotEntry {
-        SnapshotEntry(date: Date(), snapshot: .placeholder)
+        SnapshotEntry(date: Date(), result: .available(.placeholder))
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SnapshotEntry) -> Void) {
         // En galerie de widgets, l'app n'a peut-être jamais tourné : montrer des
         // valeurs d'exemple plutôt qu'un état vide, sinon le widget paraît cassé
         // au moment précis où l'utilisateur choisit de l'ajouter.
-        let snapshot = WidgetSnapshotStore.read() ?? (context.isPreview ? .placeholder : nil)
-        completion(SnapshotEntry(date: Date(), snapshot: snapshot))
+        let result = WidgetSnapshotStore.read()
+        let displayed: WidgetSnapshotStore.ReadResult
+        if case .available = result {
+            displayed = result
+        } else if context.isPreview {
+            displayed = .available(.placeholder)
+        } else {
+            displayed = result
+        }
+        completion(SnapshotEntry(date: Date(), result: displayed))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<SnapshotEntry>) -> Void) {
-        let entry = SnapshotEntry(date: Date(), snapshot: WidgetSnapshotStore.read())
+        let entry = SnapshotEntry(date: Date(), result: WidgetSnapshotStore.read())
         let next = Date().addingTimeInterval(Self.refreshInterval)
         completion(Timeline(entries: [entry], policy: .after(next)))
     }
